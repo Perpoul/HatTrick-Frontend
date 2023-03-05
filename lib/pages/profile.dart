@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hat_trick/pages/store.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -23,7 +24,10 @@ class _ProfileState extends State<Profile> {
           ),
           Center(
               child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => Store()));
+                  },
                   icon: Icon(
                     Icons.attach_money,
                     size: 30,
