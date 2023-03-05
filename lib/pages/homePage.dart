@@ -1,11 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hat_trick/pages/profile.dart';
 import 'package:hat_trick/pages/store.dart';
 import 'package:hat_trick/pages/targets.dart';
-import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatefulWidget {
