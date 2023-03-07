@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class FireAuth {
+  //register
   static Future<User?> registerUsingEmailPassword({
     required String username,
     required String email,
@@ -28,10 +29,10 @@ class FireAuth {
     return user;
   }
 
+//sign in
   static Future<User?> signInUsingEmailPassword({
     required String email,
     required String password,
-    required BuildContext context,
   }) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
@@ -52,6 +53,7 @@ class FireAuth {
     return user;
   }
 
+//refresh user
   static Future<User?> refreshUser(User user) async {
     FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -60,4 +62,11 @@ class FireAuth {
 
     return refreshedUser;
   }
+
+  Future signOut() async {
+    FirebaseAuth.instance.signOut();
+  }
 }
+
+//sign out
+

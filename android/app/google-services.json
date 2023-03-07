@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "997501497079",
+    "firebase_url": "https://hat-trick-1afd3-default-rtdb.firebaseio.com",
+    "project_id": "hat-trick-1afd3",
+    "storage_bucket": "hat-trick-1afd3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997501497079:android:197c738398c5c1234badf2",
+        "android_client_info": {
+          "package_name": "com.example.hat_trick"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "997501497079-c9dj5o7gbt0li2h42grbl8v37gttcle8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxJ7R6n0RyU5zs8XxNKRe6uHk_SaFgtMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "997501497079-c9dj5o7gbt0li2h42grbl8v37gttcle8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
