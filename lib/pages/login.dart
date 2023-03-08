@@ -6,6 +6,7 @@ import 'package:hat_trick/pages/registration.dart';
 
 import '../firebase/validator.dart';
 import '../firebase/fire_auth.dart';
+import 'homePage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -26,10 +27,10 @@ class _LoginPageState extends State<LoginPage> {
 
     User? user = FirebaseAuth.instance.currentUser;
 
-    if (user != null) {
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (context) => Profile()));
-    }
+    // if (user != null) {
+    //   Navigator.of(context)
+    //       .pushReplacement(MaterialPageRoute(builder: (context) => Profile()));
+    // }
 
     return firebaseApp;
   }
@@ -92,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                                           Validator.validatePassword(
                                               password: value),
                                       decoration: InputDecoration(
-                                        hintText: "Email",
+                                        hintText: "Password",
                                         errorBorder: UnderlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(6.0),
@@ -140,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                                                             MaterialPageRoute(
                                                                 builder:
                                                                     (context) =>
-                                                                        Profile()),
+                                                                        HomePage()),
                                                           );
                                                         }
                                                       }

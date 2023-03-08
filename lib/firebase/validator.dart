@@ -1,5 +1,5 @@
 class Validator {
-  static String? validateUserName({required String username}) {
+  static String? validateUsername({required String? username}) {
     if (username == null) {
       return null;
     }
