@@ -179,43 +179,43 @@ class _LoginPageState extends State<LoginPage> {
                                                         )))
                                               ]),
                                     //google sign in:
-                                    Card(
-                                        child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                          Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 20, right: 20),
-                                              child: MaterialButton(
-                                                color: Colors.white,
-                                                elevation: 10,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Container(
-                                                      height: 30.0,
-                                                      width: 30.0,
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                            image: AssetImage(
-                                                                'assets/images/googleimage.png'),
-                                                            fit: BoxFit.cover),
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width: 20,
-                                                    ),
-                                                    Text("Sign In with Google")
-                                                  ],
-                                                ),
-                                                onPressed: () {
-                                                  googleSignUp(context);
-                                                },
-                                              ))
-                                        ]))
+                                    //                   Card(
+                                    //                       child: Column(
+                                    //                           mainAxisAlignment:
+                                    //                               MainAxisAlignment.spaceEvenly,
+                                    //                           children: [
+                                    //                         Padding(
+                                    //                             padding: const EdgeInsets.only(
+                                    //                                 left: 20, right: 20),
+                                    //                             child: MaterialButton(
+                                    //                               color: Colors.white,
+                                    //                               elevation: 10,
+                                    //                               child: Row(
+                                    //                                 mainAxisAlignment:
+                                    //                                     MainAxisAlignment.start,
+                                    //                                 children: [
+                                    //                                   Container(
+                                    //                                     height: 30.0,
+                                    //                                     width: 30.0,
+                                    //                                     decoration: BoxDecoration(
+                                    //                                       image: DecorationImage(
+                                    //                                           image: AssetImage(
+                                    //                                               'assets/images/googleimage.png'),
+                                    //                                           fit: BoxFit.cover),
+                                    //                                       shape: BoxShape.circle,
+                                    //                                     ),
+                                    //                                   ),
+                                    //                                   SizedBox(
+                                    //                                     width: 20,
+                                    //                                   ),
+                                    //                                   Text("Sign In with Google")
+                                    //                                 ],
+                                    //                               ),
+                                    //                               onPressed: () {
+                                    //                                 googleSignUp(context);
+                                    //                               },
+                                    //                             ))
+                                    //                       ]))
                                   ]))
                             ]));
                   }
