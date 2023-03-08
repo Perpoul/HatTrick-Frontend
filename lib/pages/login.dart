@@ -8,6 +8,9 @@ import '../firebase/validator.dart';
 import '../firebase/fire_auth.dart';
 import 'homePage.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -19,6 +22,8 @@ class _LoginPageState extends State<LoginPage> {
   final emailFocus = FocusNode();
   final passwordTextController = TextEditingController();
   final emailTextController = TextEditingController();
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   bool _isProcessing = false;
 
@@ -103,6 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                                         ),
                                       ),
                                     ),
+
                                     SizedBox(height: 24.0),
                                     _isProcessing
                                         ? CircularProgressIndicator()
@@ -171,7 +177,45 @@ class _LoginPageState extends State<LoginPage> {
                                                               color:
                                                                   Colors.white),
                                                         )))
-                                              ])
+                                              ]),
+                                    //google sign in:
+                                    Card(
+                                        child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                          Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 20, right: 20),
+                                              child: MaterialButton(
+                                                color: Colors.white,
+                                                elevation: 10,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      height: 30.0,
+                                                      width: 30.0,
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                            image: AssetImage(
+                                                                'assets/images/googleimage.png'),
+                                                            fit: BoxFit.cover),
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 20,
+                                                    ),
+                                                    Text("Sign In with Google")
+                                                  ],
+                                                ),
+                                                onPressed: () {
+                                                  googleSignUp(context);
+                                                },
+                                              ))
+                                        ]))
                                   ]))
                             ]));
                   }
