@@ -6,6 +6,7 @@ import 'package:hat_trick/pages/registration.dart';
 
 import '../firebase/validator.dart';
 import '../firebase/fire_auth.dart';
+import '../widgets/googleSignInButton.dart';
 import 'homePage.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,19 +24,13 @@ class _LoginPageState extends State<LoginPage> {
   final passwordTextController = TextEditingController();
   final emailTextController = TextEditingController();
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
   bool _isProcessing = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<FirebaseApp> _initializeFirebase() async {
     FirebaseApp firebaseApp = await Firebase.initializeApp();
-
-    User? user = FirebaseAuth.instance.currentUser;
-
-    // if (user != null) {
-    //   Navigator.of(context)
-    //       .pushReplacement(MaterialPageRoute(builder: (context) => Profile()));
-    // }
 
     return firebaseApp;
   }
@@ -52,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
               title: Text("Login"),
             ),
             body: FutureBuilder(
-                future: _initializeFirebase(),
+                future: FireAuth.initializeFirebase(context: context),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return Padding(
@@ -145,9 +140,10 @@ class _LoginPageState extends State<LoginPage> {
                                                           Navigator.of(context)
                                                               .pushReplacement(
                                                             MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        HomePage()),
+                                                                builder: (context) =>
+                                                                    HomePage(
+                                                                        user:
+                                                                            user)),
                                                           );
                                                         }
                                                       }
@@ -179,6 +175,8 @@ class _LoginPageState extends State<LoginPage> {
                                                         )))
                                               ]),
                                     //google sign in:
+                                    GoogleSignInButton(),
+
                                     //                   Card(
                                     //                       child: Column(
                                     //                           mainAxisAlignment:

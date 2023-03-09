@@ -120,7 +120,7 @@ class _RegistrationState extends State<Registration> {
                                                       .pushAndRemoveUntil(
                                                     MaterialPageRoute(
                                                       builder: (context) =>
-                                                          HomePage(),
+                                                          HomePage(user: user),
                                                     ),
                                                     ModalRoute.withName('/'),
                                                   );
