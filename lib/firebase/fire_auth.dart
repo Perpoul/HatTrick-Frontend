@@ -28,11 +28,11 @@ class FireAuth {
   }
 
   //register
-  static Future<User?> registerUsingEmailPassword({
-    required String username,
-    required String email,
-    required String password,
-  }) async {
+  static Future<User?> registerUsingEmailPassword(
+      {required String username,
+      required String email,
+      required String password,
+      required}) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
     try {

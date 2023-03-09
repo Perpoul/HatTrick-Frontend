@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hat_trick/pages/homePage.dart';
 import 'package:hat_trick/pages/login.dart';
 
 import 'package:firebase_core/firebase_core.dart';

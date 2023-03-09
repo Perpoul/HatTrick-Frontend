@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   Completer<GoogleMapController> _controller = Completer();
 
-  static final CameraPosition _kGoogle = const CameraPosition(
+  static const CameraPosition _kGoogle = CameraPosition(
     target: LatLng(41.50252, -81.6082075),
     zoom: 14.4746,
   );
@@ -90,7 +90,6 @@ class _HomePageState extends State<HomePage> {
       //     final GoogleMapController controller = await _controller.future;
       //     controller
       //         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-      //     setState(() {});
       //   });
       // }),
       bottomNavigationBar: Container(
