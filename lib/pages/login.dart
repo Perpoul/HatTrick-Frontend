@@ -29,6 +29,19 @@ class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  // late Future<FirebaseApp> firebase;
+
+  Future<FirebaseApp>? firebase;
+
+  @override
+  void initState() {
+    super.initState();
+
+    firebase = FireAuth.initializeFirebase(context: context);
+
+    // firebase = _initializeFirebase();
+  }
+
   Future<FirebaseApp> _initializeFirebase() async {
     FirebaseApp firebaseApp = await Firebase.initializeApp();
 
@@ -44,22 +57,26 @@ class _LoginPageState extends State<LoginPage> {
           passwordFocus.unfocus();
         },
         child: Scaffold(
-            resizeToAvoidBottomInset: false,
+            // resizeToAvoidBottomInset: false,
             appBar: AppBar(
               title: const Text("Login"),
             ),
             body: FutureBuilder(
-                future: FireAuth.initializeFirebase(context: context),
+                future: firebase,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return Padding(
                         padding: EdgeInsets.only(
                             left: screen.width * .10,
-                            right: screen.width * .10),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            right: screen.width * .10,
+                          // top: screen.height * .10,
+                        ),
+                        child: ListView(
+                            // mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              Divider(height: screen.height * .10),
                               Padding(
+
                                 padding: EdgeInsets.only(
                                     bottom: screen.height * .025),
                                 child: FittedBox(
