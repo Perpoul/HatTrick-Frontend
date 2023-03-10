@@ -56,6 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
         child: SafeArea(
@@ -93,13 +94,13 @@ class _HomePageState extends State<HomePage> {
       //   });
       // }),
       bottomNavigationBar: Container(
-          height: 60,
+          height: screen.height * .08,
           // ignore: prefer_const_constructors
           decoration: BoxDecoration(
             color: Colors.black,
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+              topLeft: Radius.circular(1),
+              topRight: Radius.circular(1),
             ),
           ),
           child: Row(

@@ -37,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
     return GestureDetector(
         onTap: () {
           emailFocus.unfocus();
@@ -44,24 +45,30 @@ class _LoginPageState extends State<LoginPage> {
         },
         child: Scaffold(
             appBar: AppBar(
-              title: Text("Login"),
+              title: const Text("Login"),
             ),
             body: FutureBuilder(
                 future: FireAuth.initializeFirebase(context: context),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return Padding(
-                        padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+                        padding: EdgeInsets.only(
+                            left: screen.width * .10,
+                            right: screen.width * .10),
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(bottom: 24.0),
-                                child: Text(
-                                  "Login",
-                                  style:
-                                      Theme.of(context).textTheme.displayLarge,
-                                ),
+                                padding: EdgeInsets.only(
+                                    bottom: screen.height * .025),
+                                child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      "Login",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .displayLarge,
+                                    )),
                               ),
                               Form(
                                   key: _formKey,
@@ -84,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 8.0),
+                                    SizedBox(height: screen.height * .01),
                                     TextFormField(
                                       controller: passwordTextController,
                                       focusNode: passwordFocus,
@@ -104,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
 
-                                    SizedBox(height: 24.0),
+                                    SizedBox(height: screen.height * .025),
                                     _isProcessing
                                         ? CircularProgressIndicator()
                                         : Row(
@@ -155,7 +162,8 @@ class _LoginPageState extends State<LoginPage> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(width: 24.0),
+                                                SizedBox(
+                                                    width: screen.width * .06),
                                                 Expanded(
                                                     child: ElevatedButton(
                                                         onPressed: () {
@@ -175,7 +183,10 @@ class _LoginPageState extends State<LoginPage> {
                                                         )))
                                               ]),
                                     //google sign in:
-                                    GoogleSignInButton(),
+                                    SizedBox(height: screen.height * .02),
+                                    FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: GoogleSignInButton()),
 
                                     //                   Card(
                                     //                       child: Column(
