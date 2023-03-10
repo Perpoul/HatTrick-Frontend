@@ -44,6 +44,7 @@ class _LoginPageState extends State<LoginPage> {
           passwordFocus.unfocus();
         },
         child: Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               title: const Text("Login"),
             ),
