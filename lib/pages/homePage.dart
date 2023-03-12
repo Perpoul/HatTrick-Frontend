@@ -142,19 +142,6 @@ class _HomePageState extends State<HomePage> {
                   size: 35,
                 ),
               ),
-              ElevatedButton(
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                  ),
-                  onPressed: () async {
-                    await FireAuth.signOut(context: context);
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => LoginPage()));
-                  },
-                  child: Text("Sign Out"))
             ],
           )),
     );
