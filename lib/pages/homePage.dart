@@ -45,6 +45,16 @@ class _HomePageState extends State<HomePage> {
     return await Geolocator.getCurrentPosition();
   }
 
+  void onMapCreated(GoogleMapController controller) async {
+    _controller.complete(controller);
+    Position position = await getCurrentLocation();
+    CameraPosition newPosition = CameraPosition(
+      target: LatLng(position.latitude, position.longitude),
+      zoom: 14.0,
+    );
+    controller.animateCamera(CameraUpdate.newCameraPosition(newPosition));
+  }
+
   final Set<Marker> _markers = {};
 
   int pageIndex = 0;
@@ -74,9 +84,7 @@ class _HomePageState extends State<HomePage> {
                   mapType: MapType.normal,
                   myLocationEnabled: true,
                   compassEnabled: true,
-                  onMapCreated: (GoogleMapController controller) {
-                    _controller.complete(controller);
-                  },
+                  onMapCreated: onMapCreated,
                   markers: _markers,
                 ),
                 Positioned(
