@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hat_trick/pages/login.dart';
+import 'package:hat_trick/pages/settings.dart';
 import 'package:hat_trick/pages/store.dart';
 
 class Profile extends StatefulWidget {
@@ -25,6 +26,14 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Profile"),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => Settings()));
+                },
+                icon: Icon(Icons.settings))
+          ],
         ),
         body: Column(children: <Widget>[
           Center(child: Icon(Icons.person, size: 200)),
@@ -48,17 +57,6 @@ class _ProfileState extends State<Profile> {
                     size: 30,
                   ),
                   label: Text("1000" + " Heads"))),
-          ElevatedButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => LoginPage(),
-                  ),
-                );
-              },
-              child: Text('Sign out'))
         ]));
   }
 }

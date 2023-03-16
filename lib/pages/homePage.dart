@@ -7,6 +7,7 @@ import 'package:hat_trick/pages/profile.dart';
 import 'package:hat_trick/pages/store.dart';
 import 'package:hat_trick/pages/targets.dart';
 import 'package:geolocator/geolocator.dart';
+import 'dart:ui';
 
 import '../firebase/fire_auth.dart';
 
@@ -44,7 +45,7 @@ class _HomePageState extends State<HomePage> {
     return await Geolocator.getCurrentPosition();
   }
 
-  final List<Marker> _markers = <Marker>[];
+  final Set<Marker> _markers = {};
 
   int pageIndex = 0;
 
@@ -57,20 +58,47 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
+    final navBarIconSize = screen.height * .045;
+    final navBarHeight = screen.height * .08;
     return Scaffold(
       body: Container(
         child: SafeArea(
-          child: GoogleMap(
-            initialCameraPosition: _kGoogle,
-            mapType: MapType.normal,
-            myLocationEnabled: true,
-            compassEnabled: true,
-            onMapCreated: (GoogleMapController controller) {
-              _controller.complete(controller);
-            },
+          top: false,
+          child: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Stack(
+              children: [
+                GoogleMap(
+                  initialCameraPosition: _kGoogle,
+                  mapType: MapType.normal,
+                  myLocationEnabled: true,
+                  compassEnabled: true,
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller.complete(controller);
+                  },
+                  markers: _markers,
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                      child: Container(
+                        height: MediaQuery.of(context).padding.top,
+                        color: Colors.black.withOpacity(0.3),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
+
       // floatingActionButton: FloatingActionButton(onPressed: () async {
       //   getCurrentLocation().then((value) async {
       //     print(value.latitude.toString() + " " + value.longitude.toString());
@@ -95,66 +123,61 @@ class _HomePageState extends State<HomePage> {
       // }),
       bottomNavigationBar: Container(
           height: screen.height * .08,
+          padding: EdgeInsets.only(bottom: screen.height * .02),
           // ignore: prefer_const_constructors
           decoration: BoxDecoration(
             color: Colors.black,
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(1),
-              topRight: Radius.circular(1),
+              topLeft: Radius.circular(0),
+              topRight: Radius.circular(0),
             ),
           ),
-          child: Row(
+          child: Flex(
+            direction: Axis.horizontal,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => Store()));
-                },
-                icon: const Icon(
-                  Icons.local_convenience_store_rounded,
-                  color: Colors.white,
-                  size: 35,
-                ),
-              ),
-              IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => Profile(user: currentUser)));
-                },
-                icon: const Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 35,
-                ),
-              ),
-              IconButton(
-                enableFeedback: false,
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => Targets()));
-                },
-                icon: const Icon(
-                  Icons.view_list,
-                  color: Colors.white,
-                  size: 35,
-                ),
-              ),
-              ElevatedButton(
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                  ),
-                  onPressed: () async {
-                    await FireAuth.signOut(context: context);
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => LoginPage()));
+              Expanded(
+                child: IconButton(
+                  enableFeedback: false,
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => Store()));
                   },
-                  child: Text("Sign Out"))
+                  icon: Icon(
+                    Icons.local_convenience_store_outlined,
+                    color: Colors.white,
+                    size: navBarIconSize,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: IconButton(
+                  enableFeedback: false,
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => Profile(user: currentUser)));
+                  },
+                  icon: Icon(
+                    Icons.person_outline,
+                    color: Colors.white,
+                    size: navBarIconSize,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: IconButton(
+                  enableFeedback: false,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => Targets()));
+                  },
+                  icon: Icon(
+                    Icons.view_list_outlined,
+                    color: Colors.white,
+                    size: navBarIconSize,
+                  ),
+                ),
+              ),
             ],
           )),
     );
