@@ -17,25 +17,15 @@ List getTargets() {
         currentNumberKilled: 0,
         content: "Kill as many players with red hats as possible."),
     TargetType(
-        title: "Green Hats",
-        color: Colors.green,
-        currentNumberKilled: 0,
-        content: "Kill as many players with green hats as possible."),
-    TargetType(
         title: "Blue Hats",
         color: Colors.blue,
         currentNumberKilled: 0,
         content: "Kill as many players with blue hats as possible."),
     TargetType(
-        title: "Orange Hats",
-        color: Colors.orange,
+        title: "Green Hats",
+        color: Colors.green,
         currentNumberKilled: 0,
-        content: "Kill as many players with orange hats as possible."),
-    TargetType(
-        title: "Yellow Hats",
-        color: Colors.yellow,
-        currentNumberKilled: 0,
-        content: "Kill as many players with yellow hats as possible."),
+        content: "Kill as many players with green hats as possible."),
   ];
 }
 
