@@ -6,6 +6,8 @@ class Store extends StatefulWidget {
 }
 
 class _StoreState extends State<Store> {
+  final List<IconImg> storeImgNames = [IconImg("default.png"), IconImg("bangs.png"), IconImg("hat.png"), IconImg("long.png")]; // IconImg("hat.png", 100), 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,13 +16,21 @@ class _StoreState extends State<Store> {
       ),
       body: GridView.count(
           crossAxisCount: 3,
-          children: List.generate(21, (index) {
+          children: List.generate(storeImgNames.length, (index) {
             return Center(
-                child: Text(
-              'Item $index',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ));
+                child: Image(
+                        image: AssetImage("assets/${storeImgNames[index].imgName}"),
+                        width: storeImgNames[index].height,
+                        fit: BoxFit.cover
+                      ));
           })),
     );
   }
+}
+
+class IconImg {
+  String imgName;
+  double height = 100;
+  IconImg(this.imgName);
+  IconImg.sized(this.imgName, this.height);
 }
