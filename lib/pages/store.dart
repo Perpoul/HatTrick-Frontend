@@ -6,8 +6,7 @@ class Store extends StatefulWidget {
 }
 
 class _StoreState extends State<Store> {
-  final List<IconImg> storeImgNames = [IconImg("default.png", "FREE"), IconImg("bangs.png", "5"), IconImg("hat.png", "10"), IconImg("long.png", "20")];
-  final bool a = false; 
+  final List<IconImg> storeImgNames = [IconImg("default.png", "FREE"), IconImg("short.png", "5"), IconImg.sized("bangs.png", "10", 90), IconImg.sized("long.png", "15", 90), IconImg("dimmehat.png", "15"), IconImg.sized("hat.png", "30", 106)];
 
   @override
   Widget build(BuildContext context) {
