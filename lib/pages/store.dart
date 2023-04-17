@@ -12,8 +12,16 @@ class _StoreState extends State<Store> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Store"),
-      ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text('Store'),
+              GestureDetector(
+                child: Text('Skulls: 1000'),
+              )
+            ],
+          ),
+          centerTitle: false),
       body: GridView.count(
           crossAxisCount: 3,
           children: List.generate(storeImgNames.length, (index) {
