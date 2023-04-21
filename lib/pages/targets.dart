@@ -17,8 +17,8 @@ List getTargets() {
         currentNumberKilled: 0,
         content: "Kill as many players with red hats as possible."),
     TargetType(
-        title: "Blue Hats",
-        color: Colors.blue,
+        title: "Blue Team",
+        color: Colors.blue.shade800,
         currentNumberKilled: 0,
         content: "Kill as many players with blue hats as possible."),
     TargetType(
@@ -89,7 +89,7 @@ class _TargetsState extends State<Targets> {
       appBar: AppBar(
         title: Text("Targets"),
       ),
-      body: makeBody(targets[Random().nextInt((5))]),
+      body: makeBody(targets[1]),
       // body: ListView(
       //   padding: const EdgeInsets.all(8),
       //   children: <Widget>[

@@ -36,15 +36,38 @@ class _ProfileState extends State<Profile> {
           ],
         ),
         body: Column(children: <Widget>[
-          Center(child: Icon(Icons.person, size: 200)),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: CircleAvatar(
+                backgroundColor: Color.fromARGB(255, 221, 221, 221),
+                radius: 100,
+                backgroundImage: AssetImage("assets/BasicProfilePic.png")
+              )
+            )
+          ),
           Center(
               child: Text("Welcome, ${currentUser.displayName}",
                   style: TextStyle(fontSize: 30))),
           Padding(
             padding: EdgeInsets.all(10),
-            child: Center(
-                child: Text("Team: (Red/Blue/Green)",
-                    style: TextStyle(fontSize: 20))),
+            child: RichText(
+              text: const TextSpan(
+                // Note: Styles for TextSpans must be explicitly defined.
+                // Child text spans will inherit styles from parent
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Colors.black,
+                ),
+                children: <TextSpan>[
+                  TextSpan(text: "Today's Team: "),
+                  TextSpan(text: "Red", style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red
+                  )),
+                ],
+              ),
+            )
           ),
           Center(
               child: ElevatedButton.icon(
