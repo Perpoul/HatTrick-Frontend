@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
 
   static const CameraPosition _kGoogle = CameraPosition(
     target: LatLng(41.50252, -81.6082075),
-    zoom: 14.4746,
+    zoom: 15.4746,
   );
 
   Future<Position> getCurrentLocation() async {
@@ -51,6 +51,12 @@ class _HomePageState extends State<HomePage> {
     CameraPosition newPosition = CameraPosition(
       target: LatLng(position.latitude, position.longitude),
       zoom: 14.0,
+    );
+    _markers.add( Marker(
+      markerId: MarkerId('player'),
+      position: LatLng(position.latitude, position.longitude),
+
+      )
     );
     controller.animateCamera(CameraUpdate.newCameraPosition(newPosition));
   }
