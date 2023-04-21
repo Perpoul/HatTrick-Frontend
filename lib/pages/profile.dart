@@ -79,7 +79,7 @@ class _ProfileState extends State<Profile> {
                     Icons.attach_money,
                     size: 30,
                   ),
-                  label: Text("1000" + " Heads"))),
+                  label: Text("100" + " Skulls"))),
         ]));
   }
 }
