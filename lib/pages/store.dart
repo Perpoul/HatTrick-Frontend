@@ -8,14 +8,7 @@ class Store extends StatefulWidget {
 }
 
 class _StoreState extends State<Store> {
-  final List<IconImg> storeImgNames = [
-    IconImg("default.png", 0),
-    IconImg("short.png", 300),
-    IconImg.sized("bangs.png", 500, 90),
-    IconImg.sized("long.png", 700, 90),
-    IconImg("dimmehat.png", 1000),
-    IconImg.sized("hat.png", 3000, 106)];
-  List HatTypeMap = [
+  final List<HatType> storeImgNames = [
     HatType.DEFAULT,
     HatType.SHORT,
     HatType.BANGS,
@@ -46,7 +39,7 @@ class _StoreState extends State<Store> {
             return Card(
               margin: EdgeInsets.all(8),
               elevation: 5,
-              shape: storeImgNames[index].isEquipped(context) ? RoundedRectangleBorder(
+              shape: Provider.of<PlayerModel>(context).equippedHat == storeImgNames[index] ? RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(6.0),
                 side: BorderSide(
                   color: Colors.black,
@@ -58,7 +51,7 @@ class _StoreState extends State<Store> {
                 children: <Widget>[
                   Center(
                 child: Image(
-                      image: AssetImage("assets/${storeImgNames[index].imgName}"),
+                      image: AssetImage(storeImgNames[index].path),
                       width: storeImgNames[index].width,
                       fit: BoxFit.cover
                     )),
@@ -85,7 +78,9 @@ class _StoreState extends State<Store> {
                             child: Container(
                               transform: Matrix4.translationValues(-3.0, 0, 0.0),
                               child: Text(
-                                storeImgNames[index].price.toString(),
+                                Provider.of<PlayerModel>(context).ownedHats.contains(storeImgNames[index])
+                                    ? "Owned"
+                                    : storeImgNames[index].cost.toString(),
                                 style: const TextStyle(
                                   fontSize: 20,
                                   color: Color(0xFFFFD700),
@@ -101,30 +96,17 @@ class _StoreState extends State<Store> {
               ),
               onTap: () {
                 Provider.of<PlayerModel>(context, listen: false)
-                    .buyIfNotOwned(HatTypeMap[index])
+                    .buyIfNotOwned(storeImgNames[index])
                 ;
                 }
-
               ),
-
             );
           })),
     );
   }
 }
 
-class IconImg {
-  String imgName;
-  int price;
-  double width = 100;
 
-  IconImg(this.imgName, this.price);
-  IconImg.sized(this.imgName, this.price, this.width);
-
-  bool isEquipped(context) {
-    return imgName == Provider.of<PlayerModel>(context, listen: false).equippedHat;
-  }
-}
 
 
 class PurchaseResponse{

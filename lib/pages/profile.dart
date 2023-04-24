@@ -71,22 +71,19 @@ class PlayerModel extends ChangeNotifier{
 
 
 enum HatType{
-  DEFAULT('assets/default.png', 0, -80.0, 1.0),
-  SHORT('assets/short.png', 300, -70.0, 1.0),
-  BANGS('assets/bangs.png', 500, -50.0, 0.8),
-  LONG('assets/long.png', 700, -40, 1.0),
-  DIMMEHAT('assets/dimmehat.png', 1000, -100.0, 1.0),
-  TOP_HAT('assets/hat.png', 3000, -100.0, 1.0);
+  DEFAULT('assets/default.png', 0, -80.0, 100),
+  SHORT('assets/short.png', 300, -70.0, 100),
+  BANGS('assets/bangs.png', 500, -50.0, 90),
+  LONG('assets/long.png', 700, -40, 90),
+  DIMMEHAT('assets/dimmehat.png', 1000, -100.0, 100),
+  TOP_HAT('assets/hat.png', 3000, -100.0, 106);
 
-  const HatType(this.path, this.cost, this.offsetY, this.scaleFactor);
+  const HatType(this.path, this.cost, this.offsetY, this.width);
   final String path;
   final int cost;
   final double offsetY;
-  final double scaleFactor;
+  final double width;
 
-  //IconImg asIconImg(){
-  //  return IconImg.sized(imgName, price, width)
-  //}
 }
 
 class _ProfileState extends State<Profile> {
