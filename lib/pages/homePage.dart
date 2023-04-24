@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -10,6 +12,58 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:ui';
 
 import '../firebase/fire_auth.dart';
+import 'package:http/http.dart' as http;
+
+
+class UpdateData {
+  final Player myPlayer;
+  final List<OtherPlayer> otherPlayers;
+
+  const UpdateData({required this.myPlayer, required this.otherPlayers});
+
+  factory UpdateData.fromJson(Position myPosition, Map<String, dynamic> json) {
+    List<OtherPlayer> otherPlayers = [];
+    Map<String, dynamic> otherPlayersJson = Map<String, dynamic>.from(json['otherPlayers'] as Map);
+    for (MapEntry<String, dynamic> otherPlayerEntry in otherPlayersJson.entries){
+      otherPlayers.add(OtherPlayer(
+        id: otherPlayerEntry.key,
+        location: LatLng(
+          otherPlayerEntry.value['loc']['lat'],
+          otherPlayerEntry.value['loc']['lon']),
+        team: Team(otherPlayerEntry.value['color']),
+        distance: otherPlayerEntry.value['distance']
+      ));
+    }
+    return UpdateData(
+      myPlayer: Player(
+        id: json['myPlayer']['id'],
+        location: LatLng(myPosition.latitude, myPosition.longitude),
+        team: Team(json['myPlayer']['color']),
+      ),
+      otherPlayers: otherPlayers,
+    );
+  }
+}
+
+class Player {
+  final String id;
+  final LatLng location;
+  final Team team;
+
+  const Player({required this.id, required this.location, required this.team});
+}
+
+class OtherPlayer extends Player {
+  final double distance;
+
+  const OtherPlayer({required this.distance, required super.id, required super.location, required super.team});
+}
+
+class Team {
+  final String id;
+
+  const Team(this.id);
+}
 
 class HomePage extends StatefulWidget {
   final User user;
@@ -21,11 +75,56 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late User currentUser;
+  final Set<Marker> _markers = {};
 
   @override
   void initState() {
     currentUser = widget.user;
     super.initState();
+    
+    update();
+    Timer.periodic(new Duration(seconds: 5), (timer) async {
+      await update();
+    });
+  }
+
+  Future update() async {
+    // Send an update request to the backend and wait for it to complete:
+    UpdateData updateData = await updateBackend();
+
+    // Refresh all the player visuals based off the update response player data:
+    _markers.clear();
+    for (OtherPlayer otherPlayer in updateData.otherPlayers){
+      _markers.add(Marker(
+        markerId: MarkerId(otherPlayer.id),
+        position: LatLng(otherPlayer.location.latitude, otherPlayer.location.longitude),
+      ));
+    }
+  }
+
+  /// Updates the backend with this player's position and responds with all nearby player data, updating visuals on the map.
+  Future<UpdateData> updateBackend() async {
+    Position myPosition = await getCurrentLocation();
+    final response = await http
+        .post(
+          Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/update'),
+          headers: {
+            'token': await currentUser.getIdToken(),
+            'content-type': 'application/json'
+          },
+          body: jsonEncode(<String, dynamic>{
+            'myLocation': <String, double>{
+              'lat': myPosition.latitude,
+              'lon': myPosition.longitude
+            },
+          }),
+        );
+
+    if (response.statusCode == 200) {
+      return UpdateData.fromJson(myPosition, jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to update with backend');
+    }
   }
 
   Completer<GoogleMapController> _controller = Completer();
@@ -52,7 +151,7 @@ class _HomePageState extends State<HomePage> {
       target: LatLng(position.latitude, position.longitude),
       zoom: 14.0,
     );
-    _markers.add( Marker(
+    _markers.add(Marker(
       markerId: MarkerId('player'),
       position: LatLng(position.latitude, position.longitude),
 
@@ -60,16 +159,6 @@ class _HomePageState extends State<HomePage> {
     );
     controller.animateCamera(CameraUpdate.newCameraPosition(newPosition));
   }
-
-  final Set<Marker> _markers = {};
-
-  int pageIndex = 0;
-
-  // final pages = [
-  //   Store(),
-  //   Profile(user: currentUser),
-  //   Targets(),
-  // ];
 
   @override
   Widget build(BuildContext context) {
