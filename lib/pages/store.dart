@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hat_trick/pages/profile.dart';
+import 'package:provider/provider.dart';
 
 class Store extends StatefulWidget {
   @override
@@ -13,7 +15,14 @@ class _StoreState extends State<Store> {
     IconImg.sized("long.png", "700", 90),
     IconImg("dimmehat.png", "1000"),
     IconImg.sized("hat.png", "3000", 106)];
-
+  List HatTypeMap = [
+    HatType.DEFAULT,
+    HatType.SHORT,
+    HatType.BANGS,
+    HatType.LONG,
+    HatType.DIMMEHAT,
+    HatType.TOP_HAT,
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +50,8 @@ class _StoreState extends State<Store> {
                   width: 2.0,
                 ),
               ) : RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
-              child: Stack(
+              child: GestureDetector(
+                child: Stack(
                 children: <Widget>[
                   Center(
                 child: Image(
@@ -86,6 +96,12 @@ class _StoreState extends State<Store> {
                   )
                 ],
               ),
+              onTap: () {
+                Provider.of<PlayerModel>(context, listen: false).don(HatTypeMap[index]);
+                }
+
+              ),
+
             );
           })),
     );
@@ -102,5 +118,13 @@ class IconImg {
 
   bool isEquipped(){
     return imgName == "default.png";
+  }
+}
+
+
+class PurchaseResponse{
+
+  Future<int> newCurrencyValue(){
+    return Future.value(1);
   }
 }
