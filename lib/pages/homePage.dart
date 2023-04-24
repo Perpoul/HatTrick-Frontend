@@ -95,10 +95,10 @@ class _HomePageState extends State<HomePage> {
     // Refresh all the player visuals based off the update response player data:
     _markers.clear();
     for (OtherPlayer otherPlayer in updateData.otherPlayers){
-      _markers.add(Marker(
+      setState((){_markers.add(Marker(
         markerId: MarkerId(otherPlayer.id),
         position: LatLng(otherPlayer.location.latitude, otherPlayer.location.longitude),
-      ));
+      ));});
     }
   }
 
