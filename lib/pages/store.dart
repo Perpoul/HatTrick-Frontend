@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hat_trick/pages/profile.dart';
+import 'package:provider/provider.dart';
 
 class Store extends StatefulWidget {
   @override
@@ -7,13 +9,20 @@ class Store extends StatefulWidget {
 
 class _StoreState extends State<Store> {
   final List<IconImg> storeImgNames = [
-    IconImg("default.png", "200"),
-    IconImg("short.png", "300"),
-    IconImg.sized("bangs.png", "500", 90),
-    IconImg.sized("long.png", "700", 90),
-    IconImg("dimmehat.png", "1000"),
-    IconImg.sized("hat.png", "3000", 106)];
-
+    IconImg("default.png", 0),
+    IconImg("short.png", 300),
+    IconImg.sized("bangs.png", 500, 90),
+    IconImg.sized("long.png", 700, 90),
+    IconImg("dimmehat.png", 1000),
+    IconImg.sized("hat.png", 3000, 106)];
+  List HatTypeMap = [
+    HatType.DEFAULT,
+    HatType.SHORT,
+    HatType.BANGS,
+    HatType.LONG,
+    HatType.DIMMEHAT,
+    HatType.TOP_HAT,
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,8 +31,11 @@ class _StoreState extends State<Store> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text('Store'),
-              GestureDetector(
-                child: Text('Skulls: 100'),
+              Consumer<PlayerModel> (
+                builder: (context, player, child) =>
+                    GestureDetector(
+                      child: Text('Skulls: ${player.skulls}'),
+                    )
               )
             ],
           ),
@@ -34,14 +46,15 @@ class _StoreState extends State<Store> {
             return Card(
               margin: EdgeInsets.all(8),
               elevation: 5,
-              shape: storeImgNames[index].isEquipped() ? RoundedRectangleBorder(
+              shape: storeImgNames[index].isEquipped(context) ? RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(6.0),
                 side: BorderSide(
                   color: Colors.black,
                   width: 2.0,
                 ),
               ) : RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
-              child: Stack(
+              child: GestureDetector(
+                child: Stack(
                 children: <Widget>[
                   Center(
                 child: Image(
@@ -72,12 +85,12 @@ class _StoreState extends State<Store> {
                             child: Container(
                               transform: Matrix4.translationValues(-3.0, 0, 0.0),
                               child: Text(
-                              storeImgNames[index].priceLabel,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: Color(0xFFFFD700),
-                                fontWeight: FontWeight.w600,
-                              ),
+                                storeImgNames[index].price.toString(),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Color(0xFFFFD700),
+                                  fontWeight: FontWeight.w600,
+                                ),
                             )),
                           )
                         ],
@@ -86,6 +99,14 @@ class _StoreState extends State<Store> {
                   )
                 ],
               ),
+              onTap: () {
+                Provider.of<PlayerModel>(context, listen: false)
+                    .buyIfNotOwned(HatTypeMap[index])
+                ;
+                }
+
+              ),
+
             );
           })),
     );
@@ -94,13 +115,21 @@ class _StoreState extends State<Store> {
 
 class IconImg {
   String imgName;
-  String priceLabel;
+  int price;
   double width = 100;
 
-  IconImg(this.imgName, this.priceLabel);
-  IconImg.sized(this.imgName, this.priceLabel, this.width);
+  IconImg(this.imgName, this.price);
+  IconImg.sized(this.imgName, this.price, this.width);
 
-  bool isEquipped(){
-    return imgName == "default.png";
+  bool isEquipped(context) {
+    return imgName == Provider.of<PlayerModel>(context, listen: false).equippedHat;
+  }
+}
+
+
+class PurchaseResponse{
+
+  Future<int> newCurrencyValue(){
+    return Future.value(1);
   }
 }
