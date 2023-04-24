@@ -20,7 +20,7 @@ enum Team{
   GREEN;
 }
 class PlayerModel extends ChangeNotifier{
-  HatType equippedHat = HatType.DEFAULT;
+  HatType equippedHat = HatType.defaultHat;
   Team _myTeam   = Team.NOT_YET_ASSIGNED;
   Set<HatType> ownedHats = <HatType>{};
   int skulls = 1000;
@@ -49,7 +49,7 @@ class PlayerModel extends ChangeNotifier{
     notifyListeners();
   }
   void doff(){
-    equippedHat = HatType.DEFAULT;
+    equippedHat = HatType.defaultHat;
 
     notifyListeners();
   }
@@ -71,12 +71,12 @@ class PlayerModel extends ChangeNotifier{
 
 
 enum HatType{
-  DEFAULT('assets/default.png', 0, -80.0, 100),
-  SHORT('assets/short.png', 300, -70.0, 100),
-  BANGS('assets/bangs.png', 500, -50.0, 90),
-  LONG('assets/long.png', 700, -40, 90),
-  DIMMEHAT('assets/dimmehat.png', 1000, -100.0, 100),
-  TOP_HAT('assets/hat.png', 3000, -100.0, 106);
+  defaultHat('assets/default.png', 0, -80.0, 100),
+  shortHair('assets/short.png', 300, -70.0, 100),
+  bangsHair('assets/bangs.png', 500, -50.0, 90),
+  longHair('assets/long.png', 700, -40, 90),
+  dimmehat('assets/dimmehat.png', 1000, -100.0, 100),
+  topHat('assets/hat.png', 3000, -100.0, 106);
 
   const HatType(this.path, this.cost, this.offsetY, this.width);
   final String path;
