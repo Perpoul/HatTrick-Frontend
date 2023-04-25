@@ -23,7 +23,7 @@ class _StoreState extends State<Store> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('Store'),
+              const Text('Store'),
               Consumer<PlayerModel> (
                 builder: (context, player, child) =>
                     GestureDetector(
@@ -37,11 +37,11 @@ class _StoreState extends State<Store> {
           crossAxisCount: 3,
           children: List.generate(storeImgNames.length, (index) {
             return Card(
-              margin: EdgeInsets.all(8),
+              margin: const EdgeInsets.all(8),
               elevation: 5,
               shape: Provider.of<PlayerModel>(context).equippedHat == storeImgNames[index] ? RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(6.0),
-                side: BorderSide(
+                side: const BorderSide(
                   color: Colors.black,
                   width: 2.0,
                 ),

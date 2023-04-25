@@ -4,11 +4,11 @@ import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:hat_trick/pages/login.dart';
 import 'package:hat_trick/pages/profile.dart';
 import 'package:hat_trick/pages/store.dart';
 import 'package:hat_trick/pages/targets.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import 'dart:ui';
 
 import '../firebase/fire_auth.dart';
@@ -30,7 +30,7 @@ class UpdateData {
         location: LatLng(
           otherPlayerEntry.value['loc']['lat'],
           otherPlayerEntry.value['loc']['lon']),
-        team: Team(otherPlayerEntry.value['color']),
+        team: Team.from(otherPlayerEntry.value['color']),
         distance: otherPlayerEntry.value['distance']
       ));
     }
@@ -38,7 +38,7 @@ class UpdateData {
       myPlayer: Player(
         id: json['myPlayer']['id'],
         location: LatLng(myPosition.latitude, myPosition.longitude),
-        team: Team(json['myPlayer']['color']),
+        team: Team.from(json['myPlayer']['color']),
       ),
       otherPlayers: otherPlayers,
     );
@@ -59,10 +59,21 @@ class OtherPlayer extends Player {
   const OtherPlayer({required this.distance, required super.id, required super.location, required super.team});
 }
 
-class Team {
-  final String id;
+enum Team {
+  red(BitmapDescriptor.hueGreen),
+  green(BitmapDescriptor.hueRed),
+  blue(BitmapDescriptor.hueBlue);
 
-  const Team(this.id);
+  final double color;
+
+  const Team(this.color);
+
+  static Team from(String team){
+    if (team == 'green') return green;
+    if (team == 'red') return red;
+    if (team == 'blue') return blue;
+    throw Exception("Invalid Team $team");
+  }
 }
 
 class HomePage extends StatefulWidget {
@@ -81,7 +92,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     currentUser = widget.user;
     super.initState();
-
+    
     update();
     Timer.periodic(new Duration(seconds: 5), (timer) async {
       await update();
@@ -94,12 +105,28 @@ class _HomePageState extends State<HomePage> {
 
     // Refresh all the player visuals based off the update response player data:
     _markers.clear();
-    for (OtherPlayer otherPlayer in updateData.otherPlayers){
-      setState((){_markers.add(Marker(
-        markerId: MarkerId(otherPlayer.id),
-        position: LatLng(otherPlayer.location.latitude, otherPlayer.location.longitude),
-      ));});
-    }
+    Position position = await getCurrentLocation();
+
+    setState(()  {
+      _markers.add(Marker(
+        markerId: const MarkerId('player'),
+        position: LatLng(position.latitude, position.longitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+      )
+      );
+
+      for (OtherPlayer otherPlayer in updateData.otherPlayers) {
+        _markers.add(Marker(
+          markerId: MarkerId(otherPlayer.id),
+          position: LatLng(
+              otherPlayer.location.latitude, otherPlayer.location.longitude),
+          icon: BitmapDescriptor.defaultMarkerWithHue(otherPlayer.team.color),
+          onTap: () =>
+              kill(otherPlayer.id),
+        ));
+        print("markers updated");
+      }
+    });
   }
 
   /// Updates the backend with this player's position and responds with all nearby player data, updating visuals on the map.
@@ -127,6 +154,25 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<String> kill(String targetId) async {
+    final response = await http
+      .post(
+      Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/kill-player'),
+      headers: {
+        'token': await currentUser.getIdToken(),
+        'content-type': 'application/json'
+      },
+      body: jsonEncode(<String, String>{
+          "targetPlayerId": targetId
+      })
+    );
+    if (response.statusCode == 200) {
+      print(response.body);
+      return "";
+    } else {
+      throw Exception("LOL BALLS");
+    }
+  }
   Completer<GoogleMapController> _controller = Completer();
 
   static const CameraPosition _kGoogle = CameraPosition(
@@ -139,7 +185,7 @@ class _HomePageState extends State<HomePage> {
         .then((value) {})
         .onError((error, stackTrace) async {
       await Geolocator.requestPermission();
-      print("ERROR" + error.toString());
+      //print("ERROR: $error");
     });
     return await Geolocator.getCurrentPosition();
   }
@@ -151,12 +197,14 @@ class _HomePageState extends State<HomePage> {
       target: LatLng(position.latitude, position.longitude),
       zoom: 14.0,
     );
-    _markers.add(Marker(
-      markerId: MarkerId('player'),
-      position: LatLng(position.latitude, position.longitude),
-
+    setState(() {
+      _markers.add(Marker(
+        markerId: const MarkerId('player'),
+        position: LatLng(position.latitude, position.longitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
       )
-    );
+      );
+    });
     controller.animateCamera(CameraUpdate.newCameraPosition(newPosition));
   }
 
@@ -164,7 +212,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
     final navBarIconSize = screen.height * .045;
-    final navBarHeight = screen.height * .08;
+    //final navBarHeight = screen.height * .08;
     return Scaffold(
       body: Container(
         child: SafeArea(

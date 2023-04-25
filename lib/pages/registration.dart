@@ -134,6 +134,10 @@ class _RegistrationState extends State<Registration> {
                                             )))
                                   ])
                           ]))
-                    ])))));
+                    ])
+                )
+            )
+        )
+    );
   }
 }

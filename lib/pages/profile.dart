@@ -5,6 +5,8 @@ import 'package:hat_trick/pages/settings.dart';
 import 'package:hat_trick/pages/store.dart';
 import 'package:provider/provider.dart';
 
+import 'homePage.dart';
+
 class Profile extends StatefulWidget {
   final User user;
   const Profile({required this.user});
@@ -19,42 +21,44 @@ enum Team{
   BLUE,
   GREEN;
 }
-class PlayerModel extends ChangeNotifier{
+class PlayerModel extends ChangeNotifier {
   HatType equippedHat = HatType.defaultHat;
-  Team _myTeam   = Team.NOT_YET_ASSIGNED;
-  Set<HatType> ownedHats = <HatType>{};
+  Team _myTeam = Team.NOT_YET_ASSIGNED;
+  Set<HatType> ownedHats = <HatType>{
+    HatType.defaultHat
+  };
   int skulls = 1000;
 
-  void buyIfNotOwned(HatType hat){
-    if (ownedHats.contains(hat)){
+  List<OtherPlayer> nearbyPlayers = [];
+
+  void buyIfNotOwned(HatType hat) {
+    if (ownedHats.contains(hat)) {
       _don(hat);
     }
-    else if (skulls >= hat.cost){
+    else if (skulls >= hat.cost) {
       ownedHats.add(hat);
       skulls = skulls - hat.cost;
       _don(hat);
-    }
-    else{
+    } else {
       //do something
     }
-
   }
 
-  void _don(HatType hatType){
-    if(ownedHats.contains(hatType)) {
-      var oldHat = equippedHat;
+  void _don(HatType hatType) {
+    if (ownedHats.contains(hatType)) {
       equippedHat = hatType;
     }
 
     notifyListeners();
   }
-  void doff(){
+
+  void doff() {
     equippedHat = HatType.defaultHat;
 
     notifyListeners();
   }
 
-  void updateTeam(Team team){
+  void updateTeam(Team team) {
     _myTeam = team;
 
     notifyListeners();
@@ -66,6 +70,12 @@ class PlayerModel extends ChangeNotifier{
 
   void removeSkulls(int numSkulls) {
 
+  }
+
+  void updateNearbyPlayers(UpdateData updateData){
+    nearbyPlayers = updateData.otherPlayers;
+
+    notifyListeners();
   }
 }
 
@@ -114,25 +124,26 @@ class _ProfileState extends State<Profile> {
             child: Padding(
               padding: EdgeInsets.all(10),
               child:
-                    CircleAvatar(
-                      backgroundColor: Color.fromARGB(255, 221, 221, 221),
-                      radius: 100,
-                      child: Consumer<PlayerModel> (
-                          builder: (context, hat, child) => Stack(
-                              children:[
-                                Image.asset("assets/BasicProfilePic.png"),
-                                Transform.translate(
-                                  offset: Offset(0, hat.equippedHat.offsetY),
-                                  child: Image.asset(hat.equippedHat.path)
-                                )
-                        ]),
+                  CircleAvatar(
+                    backgroundColor: Color.fromARGB(255, 221, 221, 221),
+                    radius: 100,
+                    child: Consumer<PlayerModel> (
+                        builder: (context, hat, child) => Stack(
+                            children:[
+                              Image.asset("assets/BasicProfilePic.png"),
+                              Transform.translate(
+                                offset: Offset(0, hat.equippedHat.offsetY),
+                                child: Image.asset(hat.equippedHat.path)
+                              )
+                            ]
+                        ),
                     ),
                 )
               )
             ),
           Center(
               child: Text("Welcome, ${currentUser.displayName}",
-                  style: TextStyle(fontSize: 30))),
+                  style: const TextStyle(fontSize: 30))),
           Padding(
             padding: EdgeInsets.all(10),
             child: RichText(
