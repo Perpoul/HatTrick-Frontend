@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     currentUser = widget.user;
     super.initState();
-    
+
     update();
     Timer.periodic(new Duration(seconds: 5), (timer) async {
       await update();
@@ -95,10 +95,10 @@ class _HomePageState extends State<HomePage> {
     // Refresh all the player visuals based off the update response player data:
     _markers.clear();
     for (OtherPlayer otherPlayer in updateData.otherPlayers){
-      _markers.add(Marker(
+      setState((){_markers.add(Marker(
         markerId: MarkerId(otherPlayer.id),
         position: LatLng(otherPlayer.location.latitude, otherPlayer.location.longitude),
-      ));
+      ));});
     }
   }
 
