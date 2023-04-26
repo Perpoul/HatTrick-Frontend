@@ -10,11 +10,11 @@ class Store extends StatefulWidget {
 class _StoreState extends State<Store> {
   final List<HatType> storeImgNames = [
     HatType.defaultHat,
-    HatType.shortHair,
-    HatType.bangsHair,
-    HatType.longHair,
+    HatType.short,
+    HatType.bangs,
+    HatType.long,
     HatType.dimmehat,
-    HatType.topHat,
+    HatType.hat,
   ];
   @override
   Widget build(BuildContext context) {

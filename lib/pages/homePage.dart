@@ -87,10 +87,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late User currentUser;
   final Set<Marker> _markers = {};
-
+  bool dataIsLoaded = false;
   @override
   void initState() {
     currentUser = widget.user;
+    Provider.of<PlayerModel>(context, listen: false).currentUser = currentUser;
     super.initState();
     
     update();
@@ -168,9 +169,10 @@ class _HomePageState extends State<HomePage> {
     );
     if (response.statusCode == 200) {
       print(response.body);
+      update();
       return "";
     } else {
-      throw Exception("LOL BALLS");
+      throw Exception("Failed to connect to server");
     }
   }
   Completer<GoogleMapController> _controller = Completer();
@@ -208,47 +210,71 @@ class _HomePageState extends State<HomePage> {
     controller.animateCamera(CameraUpdate.newCameraPosition(newPosition));
   }
 
+  void loadDataIfNotAlreadyLoaded(){
+    if(!dataIsLoaded){
+      Provider.of<PlayerModel>(context, listen: false).loadDataFromFirebase();
+      dataIsLoaded = true;
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    loadDataIfNotAlreadyLoaded();
+    Timer.periodic(const Duration(seconds: 5 * 60), (timer) async {
+      Provider.of<PlayerModel>(context, listen: false).loadDataFromFirebase();
+    });
     final screen = MediaQuery.of(context).size;
     final navBarIconSize = screen.height * .045;
     //final navBarHeight = screen.height * .08;
-    return Scaffold(
-      body: Container(
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: Stack(
-              children: [
-                GoogleMap(
-                  initialCameraPosition: _kGoogle,
-                  mapType: MapType.normal,
-                  myLocationEnabled: true,
-                  compassEnabled: true,
-                  onMapCreated: onMapCreated,
-                  markers: _markers,
+    return
+        Scaffold(
+          body: Container(
+            child: SafeArea(
+              top: false,
+              child: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: Consumer<PlayerModel>(
+                  builder: ((context, value, child) {
+                    if (value.alive) {
+                      return Stack(
+                        children: [
+                          GoogleMap(
+                            initialCameraPosition: _kGoogle,
+                            mapType: MapType.normal,
+                            myLocationEnabled: true,
+                            compassEnabled: true,
+                            onMapCreated: onMapCreated,
+                            markers: _markers,
+                          ),
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: ClipRect(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                child: Container(
+                                  height: MediaQuery.of(context).padding.top,
+                                  color: Colors.black.withOpacity(0.3),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      return const Center(
+                          child: Text(
+                            "YOU ARE DEAD LOL",
+                              textAlign: TextAlign.center,
+                          )
+                      );
+                    }
+                  })
                 ),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: ClipRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                      child: Container(
-                        height: MediaQuery.of(context).padding.top,
-                        color: Colors.black.withOpacity(0.3),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
 
       // floatingActionButton: FloatingActionButton(onPressed: () async {
       //   getCurrentLocation().then((value) async {
