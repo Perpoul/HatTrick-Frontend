@@ -9,15 +9,16 @@ import 'package:hat_trick/pages/store.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'homePage.dart';
+import 'leaderboard.dart';
 
 class Profile extends StatefulWidget {
   final User user;
   const Profile({required this.user});
 
-
   @override
   _ProfileState createState() => _ProfileState();
 }
+
 enum Team {
   red(BitmapDescriptor.hueGreen),
   green(BitmapDescriptor.hueRed),
@@ -28,35 +29,34 @@ enum Team {
 
   const Team(this.color);
 
-  static Team from(String team){
-  if (team == 'green') return green;
-  if (team == 'red') return red;
-  if (team == 'blue') return blue;
-  throw Exception("Invalid Team $team");
+  static Team from(String team) {
+    if (team == 'green') return green;
+    if (team == 'red') return red;
+    if (team == 'blue') return blue;
+    throw Exception("Invalid Team $team");
   }
 }
+
 class PlayerModel extends ChangeNotifier {
   late User currentUser;
   HatType equippedHat = HatType.defaultHat;
   Team _myTeam = Team.notYetAssigned;
-  Set<HatType> ownedHats = <HatType>{
-    HatType.defaultHat
-  };
+  Set<HatType> ownedHats = <HatType>{HatType.defaultHat};
   int skulls = -1;
   bool alive = true;
 
   List<OtherPlayer> nearbyPlayers = [];
-  void loadDataFromFirebase() async{
+  void loadDataFromFirebase() async {
     print("Loading Data");
-    final response = await http
-        .get(
-            Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/initial-data'),
-            headers: {
-              'token': await currentUser.getIdToken(),
-              'content-type': 'application/json'
-            },
-        );
-    if (response.statusCode == 200){
+    final response = await http.get(
+      Uri.parse(
+          'https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/initial-data'),
+      headers: {
+        'token': await currentUser.getIdToken(),
+        'content-type': 'application/json'
+      },
+    );
+    if (response.statusCode == 200) {
       Map<String, dynamic> json = jsonDecode(response.body);
       Map<String, dynamic> playerInfo = json["myPlayer"];
       _myTeam = Team.from(playerInfo['color']);
@@ -64,7 +64,7 @@ class PlayerModel extends ChangeNotifier {
       ownedHats = <HatType>{};
       List<String> ownedItems = List<String>.from(playerInfo['myItems']);
       ownedHats.add(HatType.defaultHat);
-      for (String hat in ownedItems){
+      for (String hat in ownedItems) {
         ownedHats.add(HatType.from(hat));
       }
       alive = playerInfo['isAlive'];
@@ -74,30 +74,26 @@ class PlayerModel extends ChangeNotifier {
       throw Exception("Could not reach firebase, will try again");
     }
 
-
     notifyListeners();
   }
-  void buyIfNotOwned(HatType hat) async{
+
+  void buyIfNotOwned(HatType hat) async {
     if (ownedHats.contains(hat)) {
       _don(hat);
-    }
-    else if (skulls >= hat.cost) {
+    } else if (skulls >= hat.cost) {
       final response = await http.post(
-        Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/buy-shop-item?item=${hat.shortName}'),
-        headers: {
-          'token': await currentUser.getIdToken(),
-          'content-type': 'application/json'
-        },
-        body: jsonEncode(<String, String>{
-          'item': hat.shortName
-        })
-      );
+          Uri.parse(
+              'https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/buy-shop-item?item=${hat.shortName}'),
+          headers: {
+            'token': await currentUser.getIdToken(),
+            'content-type': 'application/json'
+          },
+          body: jsonEncode(<String, String>{'item': hat.shortName}));
       if (response.statusCode == 200) {
         //ownedHats.add(hat);
         //skulls = skulls - hat.cost;
         loadDataFromFirebase();
         _don(hat);
-
       }
     } else {
       //do something
@@ -108,20 +104,16 @@ class PlayerModel extends ChangeNotifier {
 
   void _don(HatType hatType) async {
     if (ownedHats.contains(hatType)) {
-
       equippedHat = hatType;
-
     }
     final response = await http.post(
-        Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/equip-item?item=${equippedHat.shortName}'),
+        Uri.parse(
+            'https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/equip-item?item=${equippedHat.shortName}'),
         headers: {
           'token': await currentUser.getIdToken(),
           'content-type': 'application/json'
         },
-        body: jsonEncode(<String, String>{
-          'shopItem': equippedHat.shortName
-        })
-    );
+        body: jsonEncode(<String, String>{'shopItem': equippedHat.shortName}));
 
     notifyListeners();
   }
@@ -138,23 +130,18 @@ class PlayerModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addSkulls(int numSkulls) {
+  void addSkulls(int numSkulls) {}
 
-  }
+  void removeSkulls(int numSkulls) {}
 
-  void removeSkulls(int numSkulls) {
-
-  }
-
-  void updateNearbyPlayers(UpdateData updateData){
+  void updateNearbyPlayers(UpdateData updateData) {
     nearbyPlayers = updateData.otherPlayers;
 
     notifyListeners();
   }
 }
 
-
-enum HatType{
+enum HatType {
   defaultHat('assets/default.png', 'default', 0, -80.0, 100),
   short('assets/short.png', 'short', 300, -70.0, 100),
   bangs('assets/bangs.png', 'bangs', 500, -50.0, 90),
@@ -169,14 +156,20 @@ enum HatType{
   final double offsetY;
   final double width;
 
-  static HatType from(String hat){
-    switch(hat){
-      case 'short':   return HatType.short;
-      case 'long':    return HatType.long;
-      case 'bangs':   return HatType.bangs;
-      case 'dimmehat':return HatType.dimmehat;
-      case 'hat':     return HatType.hat;
-      default:        return HatType.defaultHat;
+  static HatType from(String hat) {
+    switch (hat) {
+      case 'short':
+        return HatType.short;
+      case 'long':
+        return HatType.long;
+      case 'bangs':
+        return HatType.bangs;
+      case 'dimmehat':
+        return HatType.dimmehat;
+      case 'hat':
+        return HatType.hat;
+      default:
+        return HatType.defaultHat;
     }
   }
 }
@@ -206,67 +199,62 @@ class _ProfileState extends State<Profile> {
         ),
         body: Column(children: <Widget>[
           Center(
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child:
-                  CircleAvatar(
+              child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: CircleAvatar(
                     backgroundColor: Color.fromARGB(255, 221, 221, 221),
                     radius: 100,
-                    child: Consumer<PlayerModel> (
-                        builder: (context, hat, child) => Stack(
-                            children:[
-                              Image.asset("assets/BasicProfilePic.png"),
-                              Transform.translate(
-                                offset: Offset(0, hat.equippedHat.offsetY),
-                                child: Image.asset(hat.equippedHat.path)
-                              )
-                            ]
-                        ),
+                    child: Consumer<PlayerModel>(
+                      builder: (context, hat, child) => Stack(children: [
+                        Image.asset("assets/BasicProfilePic.png"),
+                        Transform.translate(
+                            offset: Offset(0, hat.equippedHat.offsetY),
+                            child: Image.asset(hat.equippedHat.path))
+                      ]),
                     ),
-                )
-              )
-            ),
+                  ))),
           Center(
               child: Text("Welcome, ${currentUser.displayName}",
                   style: const TextStyle(fontSize: 30))),
           Padding(
-            padding: EdgeInsets.all(10),
-            child: RichText(
-              text: const TextSpan(
-                // Note: Styles for TextSpans must be explicitly defined.
-                // Child text spans will inherit styles from parent
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.black,
+              padding: EdgeInsets.all(10),
+              child: RichText(
+                text: const TextSpan(
+                  // Note: Styles for TextSpans must be explicitly defined.
+                  // Child text spans will inherit styles from parent
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.black,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(text: "Today's Team: "),
+                    TextSpan(
+                        text: "Red",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.red)),
+                  ],
                 ),
-                children: <TextSpan>[
-                  TextSpan(text: "Today's Team: "),
-                  TextSpan(text: "Red", style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red
-                  )),
-                ],
-              ),
-            )
-          ),
-          Center(
-              child: Consumer<PlayerModel> (
-                builder: (context, player, child) =>
-                  ElevatedButton.icon(
+              )),
+          Column(children: [
+            Consumer<PlayerModel>(
+                builder: (context, player, child) => ElevatedButton.icon(
                     onPressed: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => Store()));
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => Store()));
                     },
                     icon: Icon(
                       Icons.attach_money,
                       size: 30,
                     ),
-                    label: Text("${player.skulls} Skulls")
-                  )
-                ),
-          )
-        ]
-        )
-    );
+                    label: Text("${player.skulls} Skulls"))),
+            Consumer<PlayerModel>(
+                builder: (context, player, child) => ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => Leaderboard()));
+                    },
+                    child: Text("View Leaderboard"))),
+          ])
+        ]));
   }
 }
