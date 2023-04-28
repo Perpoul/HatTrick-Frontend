@@ -241,7 +241,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     loadDataIfNotAlreadyLoaded();
-    Timer.periodic(const Duration(seconds: 5 * 60), (timer) async {
+    Timer.periodic(const Duration(seconds: 2 * 60), (timer) async {
       Provider.of<PlayerModel>(context, listen: false).loadDataFromFirebase();
     });
     final screen = MediaQuery.of(context).size;
