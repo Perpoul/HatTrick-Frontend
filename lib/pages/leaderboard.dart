@@ -30,6 +30,7 @@ class _LeaderboardState extends State<Leaderboard> {
       Map<String, dynamic> json = jsonDecode(response.body);
       List<dynamic> _topPlayers = json['topPlayers'];
       setState(() {
+        topPlayers = [];
         for (Map<String, dynamic> player in _topPlayers) {
           topPlayers.add(
               "Player: ${player['name']} | Skulls : ${player['totalCurrency']} | Kills : ${player['totalKills']}");
