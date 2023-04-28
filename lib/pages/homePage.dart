@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
 
     update();
-    Timer.periodic(Duration(seconds: 5), (timer) async {
+    Timer.periodic(const Duration(seconds: 5), (timer) async {
       await update();
     });
   }

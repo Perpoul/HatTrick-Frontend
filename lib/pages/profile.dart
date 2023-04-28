@@ -182,9 +182,9 @@ class _ProfileState extends State<Profile> {
         body: Column(children: <Widget>[
           Center(
               child: Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: CircleAvatar(
-                    backgroundColor: Color.fromARGB(255, 221, 221, 221),
+                    backgroundColor: const Color.fromARGB(255, 221, 221, 221),
                     radius: 100,
                     child: Consumer<PlayerModel>(
                       builder: (context, hat, child) => Stack(children: [
