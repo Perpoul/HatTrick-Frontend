@@ -45,11 +45,11 @@ class FireAuth {
       user = auth.currentUser;
     } on FirebaseAuthException catch (e) {
       if (e.code == "weak-password") {
-        Utils.showPopUp(context, "There was an error",
-            "The password provided is too weak.", Colors.red);
+        Utils.showPopUp(
+            context, "Error", "The password provided is too weak.", Colors.red);
         print("The password provided is too weak.");
       } else if (e.code == "email-already-in-use") {
-        Utils.showPopUp(context, "There was an error",
+        Utils.showPopUp(context, "Error",
             "An account already exists for this email.", Colors.red);
         print("An account already exists for this email.");
       }
@@ -76,12 +76,11 @@ class FireAuth {
       user = userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        Utils.showPopUp(context, "There was an error",
-            "No user found with that email.", Colors.red);
+        Utils.showPopUp(
+            context, "Error", "No user found with that email.", Colors.red);
         print("No user found with that email.");
       } else if (e.code == 'wrong-password') {
-        Utils.showPopUp(
-            context, "There was an error", "Incorrect password.", Colors.red);
+        Utils.showPopUp(context, "Error", "Incorrect password.", Colors.red);
         print("Incorrect password.");
       }
     }
@@ -143,7 +142,7 @@ class FireAuth {
 
             Utils.showPopUp(
                 context,
-                "There was an error",
+                "Error",
                 "The account already exists with a different credential.",
                 Colors.red);
           } else if (e.code == 'invalid-credential') {
@@ -152,11 +151,11 @@ class FireAuth {
                   content: "Error occurred while accessing credentials."),
             );*/
 
-            Utils.showPopUp(context, "There was an error",
+            Utils.showPopUp(context, "Error",
                 "Error occurred while accessing credentials.", Colors.red);
           }
         } catch (e) {
-          Utils.showPopUp(context, "There was an error",
+          Utils.showPopUp(context, "Error",
               "Error occurred using Google Sign-In.", Colors.red);
 
           /*ScaffoldMessenger.of(context).showSnackBar(FireAuth.customSnackBar(
@@ -193,8 +192,8 @@ class FireAuth {
           content: 'Error signing out. Try again.',
         ),
       );*/
-      Utils.showPopUp(context, "There was an error",
-          "Error signing out. Try again.", Colors.red);
+      Utils.showPopUp(
+          context, "Error", "Error signing out. Try again.", Colors.red);
     }
   }
 }

@@ -100,12 +100,12 @@ class _RegistrationState extends State<Registration> {
                                     Expanded(
                                         child: ElevatedButton(
                                             onPressed: () async {
-                                              setState(() {
-                                                _isProcessing = true;
-                                              });
                                               if (_registrationFormKey
                                                   .currentState!
                                                   .validate()) {
+                                                setState(() {
+                                                  _isProcessing = true;
+                                                });
                                                 User? user = await FireAuth
                                                     .registerUsingEmailPassword(
                                                   context: context,
