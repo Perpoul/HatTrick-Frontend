@@ -9,11 +9,11 @@ import 'package:hat_trick/pages/store.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'homePage.dart';
+import 'leaderboard.dart';
 
 class Profile extends StatefulWidget {
   final User user;
   const Profile({required this.user});
-
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -30,17 +30,17 @@ class PlayerModel extends ChangeNotifier {
   bool alive = true;
 
   List<OtherPlayer> nearbyPlayers = [];
-  void loadDataFromFirebase() async{
+  void loadDataFromFirebase() async {
     print("Loading Data");
-    final response = await http
-        .get(
-            Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/initial-data'),
-            headers: {
-              'token': await currentUser.getIdToken(),
-              'content-type': 'application/json'
-            },
-        );
-    if (response.statusCode == 200){
+    final response = await http.get(
+      Uri.parse(
+          'https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/initial-data'),
+      headers: {
+        'token': await currentUser.getIdToken(),
+        'content-type': 'application/json'
+      },
+    );
+    if (response.statusCode == 200) {
       Map<String, dynamic> json = jsonDecode(response.body);
       Map<String, dynamic> playerInfo = json["myPlayer"];
       _myTeam = Team.from(playerInfo['color']);
@@ -48,7 +48,7 @@ class PlayerModel extends ChangeNotifier {
       ownedHats = <HatType>{};
       List<String> ownedItems = List<String>.from(playerInfo['myItems']);
       ownedHats.add(HatType.defaultHat);
-      for (String hat in ownedItems){
+      for (String hat in ownedItems) {
         ownedHats.add(HatType.from(hat));
       }
       alive = playerInfo['isAlive'];
@@ -58,30 +58,26 @@ class PlayerModel extends ChangeNotifier {
       throw Exception("Could not reach firebase, will try again");
     }
 
-
     notifyListeners();
   }
-  void buyIfNotOwned(HatType hat) async{
+
+  void buyIfNotOwned(HatType hat) async {
     if (ownedHats.contains(hat)) {
       _don(hat);
-    }
-    else if (skulls >= hat.cost) {
+    } else if (skulls >= hat.cost) {
       final response = await http.post(
-        Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/buy-shop-item?item=${hat.shortName}'),
-        headers: {
-          'token': await currentUser.getIdToken(),
-          'content-type': 'application/json'
-        },
-        body: jsonEncode(<String, String>{
-          'item': hat.shortName
-        })
-      );
+          Uri.parse(
+              'https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/buy-shop-item?item=${hat.shortName}'),
+          headers: {
+            'token': await currentUser.getIdToken(),
+            'content-type': 'application/json'
+          },
+          body: jsonEncode(<String, String>{'item': hat.shortName}));
       if (response.statusCode == 200) {
         //ownedHats.add(hat);
         //skulls = skulls - hat.cost;
         loadDataFromFirebase();
         _don(hat);
-
       }
     } else {
       //do something
@@ -92,20 +88,16 @@ class PlayerModel extends ChangeNotifier {
 
   void _don(HatType hatType) async {
     if (ownedHats.contains(hatType)) {
-
       equippedHat = hatType;
-
     }
     final response = await http.post(
-        Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/equip-item?item=${equippedHat.shortName}'),
+        Uri.parse(
+            'https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/equip-item?item=${equippedHat.shortName}'),
         headers: {
           'token': await currentUser.getIdToken(),
           'content-type': 'application/json'
         },
-        body: jsonEncode(<String, String>{
-          'shopItem': equippedHat.shortName
-        })
-    );
+        body: jsonEncode(<String, String>{'shopItem': equippedHat.shortName}));
 
     notifyListeners();
   }
@@ -122,23 +114,18 @@ class PlayerModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addSkulls(int numSkulls) {
+  void addSkulls(int numSkulls) {}
 
-  }
+  void removeSkulls(int numSkulls) {}
 
-  void removeSkulls(int numSkulls) {
-
-  }
-
-  void updateNearbyPlayers(UpdateData updateData){
+  void updateNearbyPlayers(UpdateData updateData) {
     nearbyPlayers = updateData.otherPlayers;
 
     notifyListeners();
   }
 }
 
-
-enum HatType{
+enum HatType {
   defaultHat('assets/default.png', 'default', 0, -80.0, 100),
   short('assets/short.png', 'short', 300, -70.0, 100),
   bangs('assets/bangs.png', 'bangs', 500, -50.0, 90),
@@ -207,9 +194,7 @@ class _ProfileState extends State<Profile> {
                             ]
                         ),
                     ),
-                )
-              )
-            ),
+                  ))),
           Center(
               child: Text("Welcome, ${currentUser.displayName}",
                   style: const TextStyle(fontSize: 30))),
@@ -238,19 +223,22 @@ class _ProfileState extends State<Profile> {
                 builder: (context, player, child) =>
                   ElevatedButton.icon(
                     onPressed: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => Store()));
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => Store()));
                     },
                     icon: Icon(
                       Icons.attach_money,
                       size: 30,
                     ),
-                    label: Text("${player.skulls} Skulls")
-                  )
-                ),
-          )
-        ]
-        )
-    );
+                    label: Text("${player.skulls} Skulls"))),
+            Consumer<PlayerModel>(
+                builder: (context, player, child) => ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => Leaderboard()));
+                    },
+                    child: Text("View Leaderboard"))),
+          ])
+        ]));
   }
 }
