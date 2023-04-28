@@ -34,11 +34,13 @@ class UpdateData {
         distance: otherPlayerEntry.value['distance']
       ));
     }
+
     return UpdateData(
       myPlayer: Player(
         id: json['myPlayer']['id'],
         location: LatLng(myPosition.latitude, myPosition.longitude),
         team: Team.from(json['myPlayer']['color']),
+        isDead: json['myPlayer']['killed'] ?? false
       ),
       otherPlayers: otherPlayers,
     );
@@ -49,30 +51,42 @@ class Player {
   final String id;
   final LatLng location;
   final Team team;
-
-  const Player({required this.id, required this.location, required this.team});
+  final bool isDead;
+  const Player({required this.id, required this.location, required this.team, required this.isDead});
 }
 
 class OtherPlayer extends Player {
   final double distance;
 
-  const OtherPlayer({required this.distance, required super.id, required super.location, required super.team});
+  const OtherPlayer({
+    required this.distance,
+    required super.id,
+    required super.location,
+    required super.team,
+    super.isDead = false
+  });
 }
 
 enum Team {
-  red(BitmapDescriptor.hueGreen),
-  green(BitmapDescriptor.hueRed),
-  blue(BitmapDescriptor.hueBlue);
+  red(BitmapDescriptor.hueRed, 'Red', Colors.red),
+  green(BitmapDescriptor.hueGreen, 'Green', Colors.green),
+  blue(BitmapDescriptor.hueBlue, 'Blue', Colors.blue),
+  notYetAssigned(BitmapDescriptor.hueYellow, 'BasicProfilePic', Colors.yellow);
 
-  final double color;
 
-  const Team(this.color);
+final double color;
+  final String shortName;
+  final Color teamColor;
+  const Team(this.color, this.shortName, this.teamColor);
 
   static Team from(String team){
     if (team == 'green') return green;
     if (team == 'red') return red;
     if (team == 'blue') return blue;
-    throw Exception("Invalid Team $team");
+    return Team.notYetAssigned;
+  }
+  String pathToAvatar(){
+    return "assets/profile_body/${shortName}.png";
   }
 }
 
@@ -95,14 +109,15 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     
     update();
-    Timer.periodic(new Duration(seconds: 5), (timer) async {
+    Timer.periodic(Duration(seconds: 5), (timer) async {
       await update();
     });
   }
-
   Future update() async {
     // Send an update request to the backend and wait for it to complete:
     UpdateData updateData = await updateBackend();
+    if(!context.mounted) return;
+    Provider.of<PlayerModel>(context, listen:false).alive = !updateData.myPlayer.isDead;
 
     // Refresh all the player visuals based off the update response player data:
     _markers.clear();
@@ -175,7 +190,7 @@ class _HomePageState extends State<HomePage> {
       throw Exception("Failed to connect to server");
     }
   }
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
 
   static const CameraPosition _kGoogle = CameraPosition(
     target: LatLng(41.50252, -81.6082075),

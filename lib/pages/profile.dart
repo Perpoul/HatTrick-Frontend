@@ -18,23 +18,7 @@ class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
 }
-enum Team {
-  red(BitmapDescriptor.hueGreen),
-  green(BitmapDescriptor.hueRed),
-  blue(BitmapDescriptor.hueBlue),
-  notYetAssigned(BitmapDescriptor.hueYellow);
 
-  final double color;
-
-  const Team(this.color);
-
-  static Team from(String team){
-  if (team == 'green') return green;
-  if (team == 'red') return red;
-  if (team == 'blue') return blue;
-  throw Exception("Invalid Team $team");
-  }
-}
 class PlayerModel extends ChangeNotifier {
   late User currentUser;
   HatType equippedHat = HatType.defaultHat;
@@ -60,7 +44,7 @@ class PlayerModel extends ChangeNotifier {
       Map<String, dynamic> json = jsonDecode(response.body);
       Map<String, dynamic> playerInfo = json["myPlayer"];
       _myTeam = Team.from(playerInfo['color']);
-      skulls = playerInfo['totalCurrency'];
+      skulls = playerInfo['totalCurrency'].toInt();
       ownedHats = <HatType>{};
       List<String> ownedItems = List<String>.from(playerInfo['myItems']);
       ownedHats.add(HatType.defaultHat);
@@ -215,7 +199,7 @@ class _ProfileState extends State<Profile> {
                     child: Consumer<PlayerModel> (
                         builder: (context, hat, child) => Stack(
                             children:[
-                              Image.asset("assets/BasicProfilePic.png"),
+                              Image.asset(Provider.of<PlayerModel>(context, listen: false)._myTeam.pathToAvatar()),
                               Transform.translate(
                                 offset: Offset(0, hat.equippedHat.offsetY),
                                 child: Image.asset(hat.equippedHat.path)
@@ -232,16 +216,16 @@ class _ProfileState extends State<Profile> {
           Padding(
             padding: EdgeInsets.all(10),
             child: RichText(
-              text: const TextSpan(
+              text: TextSpan(
                 // Note: Styles for TextSpans must be explicitly defined.
                 // Child text spans will inherit styles from parent
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20.0,
                   color: Colors.black,
                 ),
                 children: <TextSpan>[
-                  TextSpan(text: "Today's Team: "),
-                  TextSpan(text: "Red", style: TextStyle(
+                  const TextSpan(text: "Today's Team: "),
+                  TextSpan(text: "${Provider.of<PlayerModel>(context, listen: false)._myTeam.shortName}", style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.red
                   )),
