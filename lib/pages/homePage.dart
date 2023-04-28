@@ -14,7 +14,6 @@ import 'dart:ui';
 import '../firebase/fire_auth.dart';
 import 'package:http/http.dart' as http;
 
-
 class UpdateData {
   final Player myPlayer;
   final List<OtherPlayer> otherPlayers;
@@ -23,25 +22,24 @@ class UpdateData {
 
   factory UpdateData.fromJson(Position myPosition, Map<String, dynamic> json) {
     List<OtherPlayer> otherPlayers = [];
-    Map<String, dynamic> otherPlayersJson = Map<String, dynamic>.from(json['otherPlayers'] as Map);
-    for (MapEntry<String, dynamic> otherPlayerEntry in otherPlayersJson.entries){
+    Map<String, dynamic> otherPlayersJson =
+        Map<String, dynamic>.from(json['otherPlayers'] as Map);
+    for (MapEntry<String, dynamic> otherPlayerEntry
+        in otherPlayersJson.entries) {
       otherPlayers.add(OtherPlayer(
-        id: otherPlayerEntry.key,
-        location: LatLng(
-          otherPlayerEntry.value['loc']['lat'],
-          otherPlayerEntry.value['loc']['lon']),
-        team: Team.from(otherPlayerEntry.value['color']),
-        distance: otherPlayerEntry.value['distance']
-      ));
+          id: otherPlayerEntry.key,
+          location: LatLng(otherPlayerEntry.value['loc']['lat'],
+              otherPlayerEntry.value['loc']['lon']),
+          team: Team.from(otherPlayerEntry.value['color']),
+          distance: otherPlayerEntry.value['distance']));
     }
 
     return UpdateData(
       myPlayer: Player(
-        id: json['myPlayer']['id'],
-        location: LatLng(myPosition.latitude, myPosition.longitude),
-        team: Team.from(json['myPlayer']['color']),
-        isDead: json['myPlayer']['killed'] ?? false
-      ),
+          id: json['myPlayer']['id'],
+          location: LatLng(myPosition.latitude, myPosition.longitude),
+          team: Team.from(json['myPlayer']['color']),
+          isDead: json['myPlayer']['killed'] ?? false),
       otherPlayers: otherPlayers,
     );
   }
@@ -52,41 +50,48 @@ class Player {
   final LatLng location;
   final Team team;
   final bool isDead;
-  const Player({required this.id, required this.location, required this.team, required this.isDead});
+  const Player(
+      {required this.id,
+      required this.location,
+      required this.team,
+      required this.isDead});
 }
 
 class OtherPlayer extends Player {
   final double distance;
 
-  const OtherPlayer({
-    required this.distance,
-    required super.id,
-    required super.location,
-    required super.team,
-    super.isDead = false
-  });
+  const OtherPlayer(
+      {required this.distance,
+      required super.id,
+      required super.location,
+      required super.team,
+      super.isDead = false});
 }
 
 enum Team {
   red(BitmapDescriptor.hueRed, 'Red', Colors.red),
   green(BitmapDescriptor.hueGreen, 'Green', Colors.green),
   blue(BitmapDescriptor.hueBlue, 'Blue', Colors.blue),
-  notYetAssigned(BitmapDescriptor.hueYellow, 'BasicProfilePic', Colors.yellow);
+  notYetAssigned(BitmapDescriptor.hueYellow, 'Green', Colors.yellow);
 
-
-final double color;
+  final double color;
   final String shortName;
   final Color teamColor;
   const Team(this.color, this.shortName, this.teamColor);
 
-  static Team from(String team){
+  static Team from(String team) {
     if (team == 'green') return green;
     if (team == 'red') return red;
     if (team == 'blue') return blue;
     return Team.notYetAssigned;
   }
-  String pathToAvatar(){
-    return "assets/profile_body/${shortName}.png";
+
+  String pathToAvatar() {
+    return "assets/BasicProfilePic_$shortName.png";
+  }
+
+  String markerIcon() {
+    return '';
   }
 }
 
@@ -107,29 +112,30 @@ class _HomePageState extends State<HomePage> {
     currentUser = widget.user;
     Provider.of<PlayerModel>(context, listen: false).currentUser = currentUser;
     super.initState();
-    
+
     update();
     Timer.periodic(Duration(seconds: 5), (timer) async {
       await update();
     });
   }
+
   Future update() async {
     // Send an update request to the backend and wait for it to complete:
     UpdateData updateData = await updateBackend();
-    if(!context.mounted) return;
-    Provider.of<PlayerModel>(context, listen:false).alive = !updateData.myPlayer.isDead;
+    if (!context.mounted) return;
+    Provider.of<PlayerModel>(context, listen: false).alive =
+        !updateData.myPlayer.isDead;
 
     // Refresh all the player visuals based off the update response player data:
     _markers.clear();
     Position position = await getCurrentLocation();
 
-    setState(()  {
+    setState(() {
       _markers.add(Marker(
         markerId: const MarkerId('player'),
         position: LatLng(position.latitude, position.longitude),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
-      )
-      );
+      ));
 
       for (OtherPlayer otherPlayer in updateData.otherPlayers) {
         _markers.add(Marker(
@@ -137,8 +143,7 @@ class _HomePageState extends State<HomePage> {
           position: LatLng(
               otherPlayer.location.latitude, otherPlayer.location.longitude),
           icon: BitmapDescriptor.defaultMarkerWithHue(otherPlayer.team.color),
-          onTap: () =>
-              kill(otherPlayer.id),
+          onTap: () => kill(otherPlayer.id),
         ));
         print("markers updated");
       }
@@ -148,20 +153,20 @@ class _HomePageState extends State<HomePage> {
   /// Updates the backend with this player's position and responds with all nearby player data, updating visuals on the map.
   Future<UpdateData> updateBackend() async {
     Position myPosition = await getCurrentLocation();
-    final response = await http
-        .post(
-          Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/update'),
-          headers: {
-            'token': await currentUser.getIdToken(),
-            'content-type': 'application/json'
-          },
-          body: jsonEncode(<String, dynamic>{
-            'myLocation': <String, double>{
-              'lat': myPosition.latitude,
-              'lon': myPosition.longitude
-            },
-          }),
-        );
+    final response = await http.post(
+      Uri.parse(
+          'https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/update'),
+      headers: {
+        'token': await currentUser.getIdToken(),
+        'content-type': 'application/json'
+      },
+      body: jsonEncode(<String, dynamic>{
+        'myLocation': <String, double>{
+          'lat': myPosition.latitude,
+          'lon': myPosition.longitude
+        },
+      }),
+    );
 
     if (response.statusCode == 200) {
       return UpdateData.fromJson(myPosition, jsonDecode(response.body));
@@ -171,17 +176,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<String> kill(String targetId) async {
-    final response = await http
-      .post(
-      Uri.parse('https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/kill-player'),
-      headers: {
-        'token': await currentUser.getIdToken(),
-        'content-type': 'application/json'
-      },
-      body: jsonEncode(<String, String>{
-          "targetPlayerId": targetId
-      })
-    );
+    final response = await http.post(
+        Uri.parse(
+            'https://us-central1-hat-trick-1afd3.cloudfunctions.net/api/kill-player'),
+        headers: {
+          'token': await currentUser.getIdToken(),
+          'content-type': 'application/json'
+        },
+        body: jsonEncode(<String, String>{"targetPlayerId": targetId}));
     if (response.statusCode == 200) {
       print(response.body);
       update();
@@ -190,6 +192,7 @@ class _HomePageState extends State<HomePage> {
       throw Exception("Failed to connect to server");
     }
   }
+
   final Completer<GoogleMapController> _controller = Completer();
 
   static const CameraPosition _kGoogle = CameraPosition(
@@ -219,18 +222,18 @@ class _HomePageState extends State<HomePage> {
         markerId: const MarkerId('player'),
         position: LatLng(position.latitude, position.longitude),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
-      )
-      );
+      ));
     });
     controller.animateCamera(CameraUpdate.newCameraPosition(newPosition));
   }
 
-  void loadDataIfNotAlreadyLoaded(){
-    if(!dataIsLoaded){
+  void loadDataIfNotAlreadyLoaded() {
+    if (!dataIsLoaded) {
       Provider.of<PlayerModel>(context, listen: false).loadDataFromFirebase();
       dataIsLoaded = true;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     loadDataIfNotAlreadyLoaded();
@@ -240,56 +243,52 @@ class _HomePageState extends State<HomePage> {
     final screen = MediaQuery.of(context).size;
     final navBarIconSize = screen.height * .045;
     //final navBarHeight = screen.height * .08;
-    return
-        Scaffold(
-          body: Container(
-            child: SafeArea(
-              top: false,
-              child: SizedBox(
-                width: double.infinity,
-                height: double.infinity,
-                child: Consumer<PlayerModel>(
-                  builder: ((context, value, child) {
-                    if (value.alive) {
-                      return Stack(
-                        children: [
-                          GoogleMap(
-                            initialCameraPosition: _kGoogle,
-                            mapType: MapType.normal,
-                            myLocationEnabled: true,
-                            compassEnabled: true,
-                            onMapCreated: onMapCreated,
-                            markers: _markers,
+    return Scaffold(
+      body: Container(
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Consumer<PlayerModel>(builder: ((context, value, child) {
+              if (value.alive) {
+                return Stack(
+                  children: [
+                    GoogleMap(
+                      initialCameraPosition: _kGoogle,
+                      mapType: MapType.normal,
+                      myLocationEnabled: true,
+                      compassEnabled: true,
+                      onMapCreated: onMapCreated,
+                      markers: _markers,
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: ClipRect(
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                          child: Container(
+                            height: MediaQuery.of(context).padding.top,
+                            color: Colors.black.withOpacity(0.3),
                           ),
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            child: ClipRect(
-                              child: BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                child: Container(
-                                  height: MediaQuery.of(context).padding.top,
-                                  color: Colors.black.withOpacity(0.3),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return const Center(
-                          child: Text(
-                            "YOU ARE DEAD LOL",
-                              textAlign: TextAlign.center,
-                          )
-                      );
-                    }
-                  })
-                ),
-              ),
-            ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return const Center(
+                    child: Text(
+                  "YOU ARE DEAD LOL",
+                  textAlign: TextAlign.center,
+                ));
+              }
+            })),
           ),
+        ),
+      ),
 
       // floatingActionButton: FloatingActionButton(onPressed: () async {
       //   getCurrentLocation().then((value) async {

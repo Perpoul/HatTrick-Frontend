@@ -23,9 +23,7 @@ class PlayerModel extends ChangeNotifier {
   late User currentUser;
   HatType equippedHat = HatType.defaultHat;
   Team _myTeam = Team.notYetAssigned;
-  Set<HatType> ownedHats = <HatType>{
-    HatType.defaultHat
-  };
+  Set<HatType> ownedHats = <HatType>{HatType.defaultHat};
   int skulls = -1;
   bool alive = true;
 
@@ -140,14 +138,20 @@ enum HatType {
   final double offsetY;
   final double width;
 
-  static HatType from(String hat){
-    switch(hat){
-      case 'short':   return HatType.short;
-      case 'long':    return HatType.long;
-      case 'bangs':   return HatType.bangs;
-      case 'dimmehat':return HatType.dimmehat;
-      case 'hat':     return HatType.hat;
-      default:        return HatType.defaultHat;
+  static HatType from(String hat) {
+    switch (hat) {
+      case 'short':
+        return HatType.short;
+      case 'long':
+        return HatType.long;
+      case 'bangs':
+        return HatType.bangs;
+      case 'dimmehat':
+        return HatType.dimmehat;
+      case 'hat':
+        return HatType.hat;
+      default:
+        return HatType.defaultHat;
     }
   }
 }
@@ -177,68 +181,70 @@ class _ProfileState extends State<Profile> {
         ),
         body: Column(children: <Widget>[
           Center(
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child:
-                  CircleAvatar(
+              child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: CircleAvatar(
                     backgroundColor: Color.fromARGB(255, 221, 221, 221),
                     radius: 100,
-                    child: Consumer<PlayerModel> (
-                        builder: (context, hat, child) => Stack(
-                            children:[
-                              Image.asset(Provider.of<PlayerModel>(context, listen: false)._myTeam.pathToAvatar()),
-                              Transform.translate(
-                                offset: Offset(0, hat.equippedHat.offsetY),
-                                child: Image.asset(hat.equippedHat.path)
-                              )
-                            ]
-                        ),
+                    child: Consumer<PlayerModel>(
+                      builder: (context, hat, child) => Stack(children: [
+                        Image.asset(
+                            Provider.of<PlayerModel>(context, listen: false)
+                                ._myTeam
+                                .pathToAvatar(),
+                            width: 500.00,
+                            height: 500.00),
+                        Transform.translate(
+                            offset: Offset(0, hat.equippedHat.offsetY),
+                            child: Image.asset(hat.equippedHat.path))
+                      ]),
                     ),
                   ))),
           Center(
               child: Text("Welcome, ${currentUser.displayName}",
                   style: const TextStyle(fontSize: 30))),
           Padding(
-            padding: EdgeInsets.all(10),
-            child: RichText(
-              text: TextSpan(
-                // Note: Styles for TextSpans must be explicitly defined.
-                // Child text spans will inherit styles from parent
-                style: const TextStyle(
-                  fontSize: 20.0,
-                  color: Colors.black,
+              padding: const EdgeInsets.all(10),
+              child: RichText(
+                text: TextSpan(
+                  // Note: Styles for TextSpans must be explicitly defined.
+                  // Child text spans will inherit styles from parent
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.black,
+                  ),
+                  children: <TextSpan>[
+                    const TextSpan(text: "Today's Team: "),
+                    TextSpan(
+                        text: Provider.of<PlayerModel>(context, listen: false)
+                            ._myTeam
+                            .shortName,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.red)),
+                  ],
                 ),
-                children: <TextSpan>[
-                  const TextSpan(text: "Today's Team: "),
-                  TextSpan(text: "${Provider.of<PlayerModel>(context, listen: false)._myTeam.shortName}", style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red
-                  )),
-                ],
-              ),
-            )
-          ),
+              )),
           Center(
-              child: Consumer<PlayerModel> (
-                builder: (context, player, child) =>
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => Store()));
-                    },
-                    icon: Icon(
-                      Icons.attach_money,
-                      size: 30,
-                    ),
-                    label: Text("${player.skulls} Skulls"))),
-            Consumer<PlayerModel>(
-                builder: (context, player, child) => ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => Leaderboard()));
-                    },
-                    child: Text("View Leaderboard"))),
-          ])
+            child: Column(children: [
+              Consumer<PlayerModel>(
+                  builder: (context, player, child) => ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Store()));
+                      },
+                      icon: const Icon(
+                        Icons.attach_money,
+                        size: 30,
+                      ),
+                      label: Text("${player.skulls} Skulls"))),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => Leaderboard()));
+                  },
+                  child: const Text("View Leaderboard"))
+            ]),
+          )
         ]));
   }
 }
