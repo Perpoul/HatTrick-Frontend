@@ -22,7 +22,7 @@ class Profile extends StatefulWidget {
 class PlayerModel extends ChangeNotifier {
   late User currentUser;
   HatType equippedHat = HatType.defaultHat;
-  Team _myTeam = Team.notYetAssigned;
+  Team myTeam = Team.notYetAssigned;
   Set<HatType> ownedHats = <HatType>{HatType.defaultHat};
   int skulls = -1;
   bool alive = true;
@@ -41,7 +41,7 @@ class PlayerModel extends ChangeNotifier {
     if (response.statusCode == 200) {
       Map<String, dynamic> json = jsonDecode(response.body);
       Map<String, dynamic> playerInfo = json["myPlayer"];
-      _myTeam = Team.from(playerInfo['color']);
+      myTeam = Team.from(playerInfo['color']);
       skulls = playerInfo['totalCurrency'].toInt();
       ownedHats = <HatType>{};
       List<String> ownedItems = List<String>.from(playerInfo['myItems']);
@@ -107,7 +107,7 @@ class PlayerModel extends ChangeNotifier {
   }
 
   void updateTeam(Team team) {
-    _myTeam = team;
+    myTeam = team;
 
     notifyListeners();
   }
@@ -190,7 +190,7 @@ class _ProfileState extends State<Profile> {
                       builder: (context, hat, child) => Stack(children: [
                         Image.asset(
                             Provider.of<PlayerModel>(context, listen: false)
-                                ._myTeam
+                                .myTeam
                                 .pathToAvatar(),
                             width: 500.00,
                             height: 500.00),
@@ -217,7 +217,7 @@ class _ProfileState extends State<Profile> {
                     const TextSpan(text: "Today's Team: "),
                     TextSpan(
                         text: Provider.of<PlayerModel>(context, listen: false)
-                            ._myTeam
+                            .myTeam
                             .shortName,
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.red)),

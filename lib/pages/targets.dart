@@ -1,5 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:hat_trick/pages/homePage.dart';
+import 'package:hat_trick/pages/profile.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/target_types.dart';
 import 'dart:math';
@@ -9,24 +12,28 @@ class Targets extends StatefulWidget {
   _TargetsState createState() => _TargetsState();
 }
 
-List getTargets() {
-  return [
-    TargetType(
-        title: "Red Hats",
-        color: Colors.red,
-        currentNumberKilled: 0,
-        content: "Kill as many players with red hats as possible."),
-    TargetType(
-        title: "Blue Team",
-        color: Colors.blue.shade800,
-        currentNumberKilled: 0,
-        content: "Kill as many players with blue hats as possible."),
-    TargetType(
-        title: "Green Hats",
-        color: Colors.green,
-        currentNumberKilled: 0,
-        content: "Kill as many players with green hats as possible."),
-  ];
+TargetType getTargets(Team team) {
+  switch (team) {
+    case Team.blue:
+      return TargetType(
+          title: "Red Hats",
+          color: Colors.red,
+          currentNumberKilled: 0,
+          content: "Kill as many players with red hats as possible.");
+    case Team.green:
+      return TargetType(
+          title: "Blue Team",
+          color: Colors.blue.shade800,
+          currentNumberKilled: 0,
+          content: "Kill as many players with blue hats as possible.");
+    case Team.red:
+    default:
+      return TargetType(
+          title: "Green Hats",
+          color: Colors.green,
+          currentNumberKilled: 0,
+          content: "Kill as many players with green hats as possible.");
+  }
 }
 
 Container makeBody(TargetType target) => Container(
@@ -50,11 +57,10 @@ Card makeCard(TargetType target) => Card(
     );
 
 class _TargetPageState extends State<Targets> {
-  List targets = getTargets();
+  //List targets = getTargets();
 
   @override
   void initState() {
-    targets = getTargets();
     super.initState();
   }
 
@@ -81,15 +87,13 @@ ListTile makeListTile(TargetType target) => ListTile(
     );
 
 class _TargetsState extends State<Targets> {
-  List targets = getTargets();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Targets"),
       ),
-      body: makeBody(targets[1]),
+      body: makeBody(getTargets(Provider.of<PlayerModel>(context).myTeam)),
       // body: ListView(
       //   padding: const EdgeInsets.all(8),
       //   children: <Widget>[

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hat_trick/pages/profile.dart';
 import 'package:hat_trick/pages/store.dart';
@@ -90,8 +90,8 @@ enum Team {
     return "assets/BasicProfilePic_$shortName.png";
   }
 
-  String markerIcon() {
-    return '';
+  String pathToMarkerIcon() {
+    return 'assets/$shortName.png';
   }
 }
 
@@ -136,18 +136,22 @@ class _HomePageState extends State<HomePage> {
         position: LatLng(position.latitude, position.longitude),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
       ));
-
-      for (OtherPlayer otherPlayer in updateData.otherPlayers) {
-        _markers.add(Marker(
-          markerId: MarkerId(otherPlayer.id),
-          position: LatLng(
-              otherPlayer.location.latitude, otherPlayer.location.longitude),
-          icon: BitmapDescriptor.defaultMarkerWithHue(otherPlayer.team.color),
-          onTap: () => kill(otherPlayer.id),
-        ));
-        print("markers updated");
-      }
     });
+    for (OtherPlayer otherPlayer in updateData.otherPlayers) {
+      BitmapDescriptor bitmap = BitmapDescriptor.fromBytes(
+          (await rootBundle.load(otherPlayer.team.pathToMarkerIcon()))
+              .buffer
+              .asUint8List(),
+          size: Size(128, 128));
+      setState(() => _markers.add(Marker(
+            markerId: MarkerId(otherPlayer.id),
+            position: LatLng(
+                otherPlayer.location.latitude, otherPlayer.location.longitude),
+            icon: bitmap,
+            onTap: () => kill(otherPlayer.id),
+          )));
+      print("markers updated");
+    }
   }
 
   /// Updates the backend with this player's position and responds with all nearby player data, updating visuals on the map.
