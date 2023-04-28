@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:another_flushbar/flushbar.dart';
+import 'package:another_flushbar/flushbar_helper.dart';
+import 'package:another_flushbar/flushbar_route.dart';
 
 class Utils {
   static void showConfirmationDialog(
@@ -27,5 +30,16 @@ class Utils {
         );
       },
     );
+  }
+
+  static void showPopUp(
+      BuildContext context, String title, String message, Color color) {
+    Flushbar(
+      duration: Duration(seconds: 3),
+      title: title,
+      message: message,
+      flushbarPosition: FlushbarPosition.TOP,
+      backgroundColor: color,
+    ).show(context);
   }
 }

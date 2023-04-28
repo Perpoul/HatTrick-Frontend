@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:hat_trick/misc/utils.dart';
 import '../pages/homePage.dart';
 import '../pages/login.dart';
 
@@ -29,7 +29,8 @@ class FireAuth {
 
   //register
   static Future<User?> registerUsingEmailPassword(
-      {required String username,
+      {required BuildContext context,
+      required String username,
       required String email,
       required String password,
       required}) async {
@@ -44,8 +45,12 @@ class FireAuth {
       user = auth.currentUser;
     } on FirebaseAuthException catch (e) {
       if (e.code == "weak-password") {
+        Utils.showPopUp(context, "There was an error",
+            "The password provided is too weak.", Colors.red);
         print("The password provided is too weak.");
       } else if (e.code == "email-already-in-use") {
+        Utils.showPopUp(context, "There was an error",
+            "An account already exists for this email.", Colors.red);
         print("An account already exists for this email.");
       }
     } catch (e) {
@@ -56,6 +61,7 @@ class FireAuth {
 
 //sign in
   static Future<User?> signInUsingEmailPassword({
+    required BuildContext context,
     required String email,
     required String password,
   }) async {
@@ -70,8 +76,12 @@ class FireAuth {
       user = userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
+        Utils.showPopUp(context, "There was an error",
+            "No user found with that email.", Colors.red);
         print("No user found with that email.");
       } else if (e.code == 'wrong-password') {
+        Utils.showPopUp(
+            context, "There was an error", "Incorrect password.", Colors.red);
         print("Incorrect password.");
       }
     }
@@ -125,20 +135,32 @@ class FireAuth {
           user = userCredential.user;
         } on FirebaseAuthException catch (e) {
           if (e.code == 'account-exists-with-different-credential') {
-            ScaffoldMessenger.of(context).showSnackBar(
+            /*ScaffoldMessenger.of(context).showSnackBar(
               FireAuth.customSnackBar(
                   content:
                       "The account already exists with a different credential."),
-            );
+            );*/
+
+            Utils.showPopUp(
+                context,
+                "There was an error",
+                "The account already exists with a different credential.",
+                Colors.red);
           } else if (e.code == 'invalid-credential') {
-            ScaffoldMessenger.of(context).showSnackBar(
+            /*ScaffoldMessenger.of(context).showSnackBar(
               FireAuth.customSnackBar(
                   content: "Error occurred while accessing credentials."),
-            );
+            );*/
+
+            Utils.showPopUp(context, "There was an error",
+                "Error occurred while accessing credentials.", Colors.red);
           }
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(FireAuth.customSnackBar(
-              content: "Error occurred using Google Sign-In."));
+          Utils.showPopUp(context, "There was an error",
+              "Error occurred using Google Sign-In.", Colors.red);
+
+          /*ScaffoldMessenger.of(context).showSnackBar(FireAuth.customSnackBar(
+              content: "Error occurred using Google Sign-In."));*/
         }
       }
 
@@ -166,11 +188,13 @@ class FireAuth {
       }
       await FirebaseAuth.instance.signOut();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      /*ScaffoldMessenger.of(context).showSnackBar(
         FireAuth.customSnackBar(
           content: 'Error signing out. Try again.',
         ),
-      );
+      );*/
+      Utils.showPopUp(context, "There was an error",
+          "Error signing out. Try again.", Colors.red);
     }
   }
 }

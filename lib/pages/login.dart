@@ -67,8 +67,8 @@ class _LoginPageState extends State<LoginPage> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return Padding(
                         padding: EdgeInsets.only(
-                            left: screen.width * .10,
-                            right: screen.width * .10,
+                          left: screen.width * .08,
+                          right: screen.width * .08,
                           // top: screen.height * .10,
                         ),
                         child: ListView(
@@ -76,7 +76,6 @@ class _LoginPageState extends State<LoginPage> {
                             children: [
                               Divider(height: screen.height * .10),
                               Padding(
-
                                 padding: EdgeInsets.only(
                                     bottom: screen.height * .025),
                                 child: FittedBox(
@@ -150,6 +149,8 @@ class _LoginPageState extends State<LoginPage> {
 
                                                         User? user = await FireAuth
                                                             .signInUsingEmailPassword(
+                                                                context:
+                                                                    context,
                                                                 email:
                                                                     emailTextController
                                                                         .text,

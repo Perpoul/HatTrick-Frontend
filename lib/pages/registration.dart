@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hat_trick/misc/utils.dart';
 import 'package:hat_trick/pages/profile.dart';
 
 import '../firebase/fire_auth.dart';
@@ -25,6 +26,7 @@ class _RegistrationState extends State<Registration> {
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
     return GestureDetector(
         onTap: () {
           usernameFocus.unfocus();
@@ -36,7 +38,12 @@ class _RegistrationState extends State<Registration> {
               title: Text("Register"),
             ),
             body: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: EdgeInsets.only(
+                  left: screen.width * .08,
+                  right: screen.width * .08,
+                  bottom: screen.height * .05,
+                  top: screen.height * .05,
+                ),
                 child: Center(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -59,7 +66,7 @@ class _RegistrationState extends State<Registration> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 16.0),
+                            SizedBox(height: screen.height * .02),
                             TextFormField(
                                 controller: emailTextContoller,
                                 focusNode: emailFocus,
@@ -71,7 +78,7 @@ class _RegistrationState extends State<Registration> {
                                       borderRadius: BorderRadius.circular(6.0),
                                       borderSide: BorderSide(color: Colors.red),
                                     ))),
-                            SizedBox(height: 16.0),
+                            SizedBox(height: screen.height * .02),
                             TextFormField(
                                 controller: passwordTextController,
                                 focusNode: passwordFocus,
@@ -86,7 +93,7 @@ class _RegistrationState extends State<Registration> {
                                         borderSide: BorderSide(
                                           color: Colors.red,
                                         )))),
-                            SizedBox(height: 32.0),
+                            SizedBox(height: screen.height * .02),
                             _isProcessing
                                 ? CircularProgressIndicator()
                                 : Row(children: [
@@ -101,6 +108,7 @@ class _RegistrationState extends State<Registration> {
                                                   .validate()) {
                                                 User? user = await FireAuth
                                                     .registerUsingEmailPassword(
+                                                  context: context,
                                                   username:
                                                       usernameTextController
                                                           .text,
@@ -134,10 +142,6 @@ class _RegistrationState extends State<Registration> {
                                             )))
                                   ])
                           ]))
-                    ])
-                )
-            )
-        )
-    );
+                    ])))));
   }
 }
