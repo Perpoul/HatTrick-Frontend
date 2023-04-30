@@ -33,7 +33,7 @@ class _LeaderboardState extends State<Leaderboard> {
         topPlayers = [];
         for (Map<String, dynamic> player in _topPlayers) {
           topPlayers.add(
-              "Player: ${player['name']} | Skulls : ${player['totalCurrency']} | Kills : ${player['totalKills']}");
+              "Player: ${player['name']} | Kills : ${player['totalKills']}");
         }
       });
     }
